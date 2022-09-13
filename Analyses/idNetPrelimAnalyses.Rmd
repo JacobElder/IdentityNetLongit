@@ -1,0 +1,314 @@
+---
+title: "idNetLong"
+author: "Elder, Jacob"
+date: "2022-09-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(groundhog)
+pkgs <-  c("tidyverse","here", "igraph","lmerTest")
+groundhog.day <- '2022-07-25'
+groundhog.library(pkgs, groundhog.day)
+here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
+```
+
+```{r}
+fullLong <- read.csv(here("Data/longIdentityNet.csv"))
+fullShort <- read.csv(here("Data/shortIdentityNet.csv"))
+fullData <- fullLong %>% full_join(fullShort, by = c("subID","Time"))
+```
+
+# Pre-Registered
+
+## Salient identity-relevant events predict greater social identification
+
+```{r}
+m<-lmer(I ~ Salient + ( Salient | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+### Across time
+
+```{r}
+m<-lmer(I ~ Salient*Time + ( Salient + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","Salient")) %>% plot()
+```
+
+## Positive experiences lead to more social identification
+
+```{r}
+m<-lmer(I ~ GExp + ( GExp | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+### Across time
+
+```{r}
+m<-lmer(I ~ GExp * Time + ( GExp + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+# Negative experiences do not lead to less social identification
+
+```{r}
+m<-lmer(I ~ BExp + ( BExp | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+### Across time
+
+```{r}
+m<-lmer(I ~ BExp * Time + ( BExp + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Changes to one identity will result in changes to other connected identities
+
+### Positivity
+
+As identity perceived more positively, it's neighboring connected identities are also perceived more positively
+
+```{r}
+m<-lmer(P_neigh ~ P * Time + ( P + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","P[1,4,7]")) %>% plot()
+```
+
+# Identity Uncertainty
+
+```{r}
+m<-lmer(IdUnc_neigh ~ IdUnc + ( IdUnc | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+# Prototypicality
+
+```{r}
+m<-lmer(Proto_neigh ~ Proto + ( Proto | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+# Acting consistent with connected identities increases identification with target identity
+
+```{r}
+m<-lmer(I ~ Consist_neigh + ( Consist_neigh | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+# Feeling it is important to belong to neighboring identity is associated with greater identification with target identity
+
+```{r}
+m<-lmer(I ~ Ideal_neigh + ( Ideal_neigh | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+# Stigma to connected identities is associated with increase in feeling categorized
+
+```{r}
+m<-lmer(BelPer ~ St_neigh + ( St_neigh  | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+
+#
+
+```{r}
+m<-lmer(Proto_neigh ~ Proto + ( Proto | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Feelings obligated to behave in-line with identity increases identification with connected identities
+
+```{r}
+m<-lmer(I_neigh ~ Should + ( Should | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+
+## People will change their identities, feelings about an identity, and relations to that identity, when experiencing events or experiences that are continually inconsistent with the identity
+
+```{r}
+m<-lmer(I ~ Consist + ( Consist | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+## If people experience negative feelings or events associated with one identity, they will de-identify with identities or change the relationships previously associated with that identity
+
+```{r}
+m<-lmer(I ~ BExp * GExp + ( BExp + GExp | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("BExp","GExp")) %>% plot()
+```
+
+## If people experience a discrepancy between their ideal and actual self, they will seek to resolve it by changing their identities
+
+```{r}
+m<-lmer(I ~ discrep * Time + ( discrep | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Higher uncertainty will predict greater identification, especially for entitative groups: Nope
+
+```{r}
+m<-lmer(I ~ MemUnc + ( MemUnc | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(I ~ IdUnc + ( IdUnc | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+### Especially for entitative identities
+
+```{r}
+m<-lmer(I ~ MemUnc * Ent + ( MemUnc + Ent | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(I ~ IdUnc * Ent + ( IdUnc + Ent | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Entitativity predicts social identification
+
+```{r}
+m<-lmer(I ~ Ent + ( Ent | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Optimal Distinctiveness predicts social identification
+
+```{r}
+m<-lmer(I ~ A * D + ( A + D | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("A","D")) %>% plot()
+```
+# Exploratory
+
+## Cumulative inconsistency predicts disidentification
+
+```{r}
+m<-lmer(I ~ Consist_Cum + Time + ( Consist_Cum+Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Cumulative salient experiences
+
+```{r}
+m<-lmer(I ~ Salient_Cum + Time + ( Salient_Cum+Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+## Both cumulative salient and consistent modeled simultaneously
+
+```{r}
+m<-lmer(I ~ Salient_Cum + Time + Consist_Cum + ( Salient_Cum+Time+Consist_Cum | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+
+
+
+```{r}
+m<-lmer(I ~ MemUnc_Cum * Time + ( MemUnc_Cum+Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(I ~ IdUnc_Cum * Time + ( IdUnc_Cum+Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m
+```
+
+
+## Degree centrality predicts identification
+
+```{r}
+m<-lmer(Degree ~ Salient + ( Salient | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ I + ( I | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ Should + ( Should | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ Sim + ( Sim | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ Proto + ( Proto | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ A + ( A | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ A*D + ( A + D | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ MemUnc + ( MemUnc | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Degree ~ IdUnc + ( IdUnc | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+
+
+```{r}
+library(lmerTest)
+m<-lmer(Should ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Salient ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Ent ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Proto ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","Degree")) %>% plot()
+
+m<-lmer(Sim ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(P ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(Should ~ Degree*Time + ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+```
+
+```{r}
+m<-lmer(I ~ IdUnc*Time + ( IdUnc + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+
+m<-lmer(I ~ MemUnc*Time + ( MemUnc + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","MemUnc")) %>% plot()
+```
+
+```{r}
+m<-lmer(I ~ GExp * BExp + ( GExp + BExp | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("GExp","BExp")) %>% plot()
+
+m<-lmer(I ~ Ent * Time +  ( Ent + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","Ent")) %>% plot()
+
+m<-lmer(Degree ~ Ent * Time +  ( Ent + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","Ent")) %>% plot()
+
+m<-lmer(I ~ Degree * Time +  ( Degree + Time | subID ) + (1 | identity), data=fullLong)
+summary(m)
+ggpredict(m, c("Time","Degree")) %>% plot()
+```
+
+
+
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

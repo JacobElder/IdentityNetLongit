@@ -12,6 +12,11 @@ here::i_am("cleaning/idNetCleaning.Rmd")
 ```
 
 ```{r}
+devtools::source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/assortativityNA.R")
+```
+
+
+```{r}
 T1raw <- data.table::fread(here("cleaning/input/rawT1.csv"))
 T2raw <- data.table::fread(here("cleaning/input/rawT2.csv"))
 T3raw <- data.table::fread(here("cleaning/input/rawT3.csv"))
@@ -68,6 +73,9 @@ t1tot2subs <- intersect(T1raw$subID, T2raw$subID)
 T1raw <- T1raw[T1raw$subID %in% t1tot2subs,]
 
 T1raw <- T1raw[!duplicated(T1raw$subID),]
+T2raw <- T2raw[!duplicated(T2raw$subID),]
+T3raw <- T3raw[!duplicated(T3raw$subID),]
+T4raw <- T4raw[!duplicated(T4raw$subID),]
 ```
 
 ```{r}
@@ -100,61 +108,342 @@ colnames(idMat) <- c("subID",paste0("I",1:16))
 allNA <- which( rowSums(is.na(idMat[,2:16])) != 15 ) # which rows are not all NA
 notallNAsubs <- idMat$subID[allNA]
 T1raw <- T1raw[T1raw$subID %in% notallNAsubs,]
+T2raw <- T2raw[T2raw$subID %in% notallNAsubs,]
+T3raw <- T3raw[T3raw$subID %in% notallNAsubs,]
+T4raw <- T4raw[T4raw$subID %in% notallNAsubs,]
 ```
 
+```{r}
+T1s <- unique(T1raw$subID)
+T2s <- unique(T2raw$subID)
+T3s <- unique(T3raw$subID)
+T4s <- unique(T4raw$subID)
+```
 
 ```{r}
-uIds <- unique(T1raw$id)
-# column names
-idSubs <- T1raw %>%
-  select(contains("_Relations"))
-for(n in 1:nrow(T1raw)){
-  i <- T1raw$subID[n]
+for(k in 1:4){
   
-  idNames <- idMat[idMat$subID==i,2:16] %>% as_vector() %>% na.omit()
-  numIdentities <- sum(!is.na(idMat[idMat$subID==i,2:16]))
-  
-  # subset subject row
-  subDf <- T1raw[T1raw$subID==i,]
-  # generate empty matrix
-  subMat <- matrix(data = 0, nrow = numIdentities, ncol = numIdentities)
-  subMatW <- matrix(data = 0, nrow = numIdentities, ncol = numIdentities)
-  for(c in 1:numIdentities){
-    # subset identity "c"
-    j <- idSubs[n,c]
-    # split words by comma
-    selectWord <-strsplit(as.character(idSubs[n,c][[1]]),",") 
-    # which column index are select identities
-    ######rowSub <-which(idNames %in% selectWord[[1]])
-    # populate 1s for select identities in row
-    subMat[c,as.numeric(unlist(selectWord))] <- 1 # Unweighted matrix
-    diag(subMat) <- 0 # Set diagonal to 0s if participants nominated any self-connections
-    subMatW[c,as.numeric(unlist(selectWord))]  <- as.numeric ( T1raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(selectWord) ))] ) # Weighted matrix
-    # if participant didn't indicate weight, replace with 0
-    subMatW[is.na(subMatW)] <- 0
-    # Flipped direction of fraction so more overlap is closer between identities
+  raw <- get(paste0("T",k,"raw"))
+  uIds <- unique(raw$subID)
+  # column names
+  idSubs <- raw %>%
+    select(contains("_Relations"))
+  for(n in 1:nrow(raw)){
+    i <- raw$subID[n]
     
-    diag(subMatW) <- 0 # Set diagonal to 0s if participants nominated any self-connections
-}
-  rownames(subMat) <- idNames
-  colnames(subMat) <- idNames
+    idNames <- idMat[idMat$subID==i,2:16] %>% as_vector() %>% na.omit()
+    numIdentities <- sum(!is.na(idMat[idMat$subID==i,2:16]))
+    
+    # subset subject row
+    subDf <- raw[raw$subID==i,]
+    # generate empty matrix
+    subMat <- matrix(data = 0, nrow = numIdentities, ncol = numIdentities)
+    subMatW <- matrix(data = 0, nrow = numIdentities, ncol = numIdentities)
+    for(c in 1:numIdentities){
+      # subset identity "c"
+      j <- idSubs[n,c]
+      # split words by comma
+      selectWord <-strsplit(as.character(idSubs[n,c][[1]]),",") 
+      if(length(selectWord[[1]])==0){
+        next
+      }
+      
+      # which column index are select identities
+      ######rowSub <-which(idNames %in% selectWord[[1]])
+      # populate 1s for select identities in row
+      subMat[c,as.numeric(unlist(selectWord))] <- 1 # Unweighted matrix
+      diag(subMat) <- 0 # Set diagonal to 0s if participants nominated any self-connections
+      subMatW[c,as.numeric(unlist(selectWord))]  <- as.numeric ( raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(selectWord) ))] ) / 11 # Weighted matrix
+      # if participant didn't indicate weight, replace with 0
+      subMatW[is.na(subMatW)] <- 0
+      # Flipped direction of fraction so more overlap is closer between identities
+      
+      diag(subMatW) <- 0 # Set diagonal to 0s if participants nominated any self-connections
+  }
+    rownames(subMat) <- idNames
+    colnames(subMat) <- idNames
+    
+    rownames(subMatW) <- idNames
+    colnames(subMatW) <- idNames
   
-  rownames(subMatW) <- idNames
-  colnames(subMatW) <- idNames
+      # convert to graph
+    subGraph <- graph.adjacency(subMat)
+    subGraphW <- graph.adjacency(subMatW, weighted = T)
+    # label
+    assign(paste0("subIMat.",i,"_",k),subMat)
+    assign(paste0("subIGraph.",i,"_",k),subGraph)
+    
+    assign(paste0("subIMatW.",i,"_",k),subMatW)
+    assign(paste0("subIGraphW.",i,"_",k),subGraphW)
+  }
 
-    # convert to graph
-  subGraph <- graph.adjacency(subMat)
-  subGraphW <- graph.adjacency(subMatW, weighted = T)
-  # label
-  assign(paste0("subIMat.",i),subMat)
-  assign(paste0("subIGraph.",i),subGraph)
   
-  assign(paste0(".",i),subMatW)
-  assign(paste0("subIGraphW.",i),subGraphW)
 }
-
 ```
+
 ```{r}
-
+computeNeighbors <- function(graph, label, variable, type = "all"){
+  curNeigh <- neighbors(graph, label, mode = type)
+  curGraph <- induced.subgraph(graph, curNeigh)
+  impInd <- which(!is.na(vertex_attr(curGraph, variable)))
+  impGraph <- induced.subgraph(curGraph, impInd)
+  valuesImp <- vertex_attr(impGraph, variable)
+  neighAve <- mean(valuesImp, na.rm = TRUE)
+  return(neighAve)
+}
+computeNeighbors <- compiler::cmpfun(computeNeighbors)
 ```
+
+
+```{r}
+fullLong <- matrix(nrow=0,ncol=52)
+
+fullShort <- matrix(nrow=0,ncol=32)
+
+varnames <- c("M", "I", "P", "Ent", "Sim", "Proto", "SzSch", "SzUS", "A", 
+"D", "ThermIn", "ThermOut", "MemUnc", "IdUnc", "Should", "Consist", 
+"Salient", "Ideal", "BExp", "GExp", "BelPer")
+for(i in 1:4){
+  uIds <- get(paste0("T",i,"s"))
+  raw <- get(paste0("T",i,"raw"))
+  timeShort <- matrix(nrow=0,ncol=32)
+  timeLong <- matrix(nrow=0,ncol=52)
+  for(j in 1:length(uIds)){
+    subID <- uIds[j]
+    subNetUW <- get(paste0("subIGraph.",subID,"_",i))
+    subNetW <- get(paste0("subIGraphW.",subID,"_",i))
+    numIdentities <- sum(!is.na(idMat[idMat$subID==subID,2:16]))
+    
+    M <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_M")])
+    I <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_I")])
+    P <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_P")])
+    St <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_St")])
+    Ent <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Ent")])
+    Sim <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Sim")])
+    Proto <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Proto")])
+    SzSch <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Sz_1")])
+    SzUS <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Sz_13")])
+    A <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_A")])
+    D <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_D")])
+    ThermIn <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Therm_1")])
+    ThermOut <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Therm_2")])
+    MemUnc <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_MemUncert")])
+    IdUnc <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_IdUncert")])
+    Should <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Should")])
+    Consist <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Consist")])
+    Salient <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Salient")])
+    Ideal <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Ideal")])
+    BExp <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_BExp")])
+    GExp <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_GExp")])
+    BelPer <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_BelPer")])
+    
+    V(subNetUW)$M <- M
+    V(subNetUW)$I <- I
+    V(subNetUW)$P <- P
+    V(subNetUW)$St <- St
+    V(subNetUW)$Ent <- Ent
+    V(subNetUW)$Sim <- Sim
+    V(subNetUW)$Proto <- Proto
+    V(subNetUW)$SzSch <- SzSch
+    V(subNetUW)$SzUS <- SzUS
+    V(subNetUW)$A <- A
+    V(subNetUW)$D <- D
+    V(subNetUW)$ThermIn <- ThermIn
+    V(subNetUW)$ThermOut <- ThermOut
+    V(subNetUW)$MemUnc <- MemUnc
+    V(subNetUW)$IdUnc <- IdUnc
+    V(subNetUW)$Should <- Should
+    V(subNetUW)$Consist <- Consist
+    V(subNetUW)$Salient <- Salient
+    V(subNetUW)$Ideal <- Ideal
+    V(subNetUW)$BExp <- BExp
+    V(subNetUW)$GExp <- GExp
+    V(subNetUW)$BelPer <- BelPer
+    
+    subLong <- 
+      cbind(subID,
+          as_vector(idMat[idMat$subID==subID,2:(numIdentities+1)]),
+          1:length(numIdentities),
+          i,
+          degree(subNetUW),
+          degree(subNetUW,mode="out"),
+          degree(subNetUW,mode="in"),
+          strength(subNetW),
+          M,
+          I,
+          P,
+          St,
+          Ent,
+          Sim,
+          Proto,
+          SzSch,
+          SzUS,
+          A,
+          D,
+          ThermIn,
+          ThermOut,
+          MemUnc,
+          IdUnc,
+          Should,
+          Consist,
+          Salient,
+          Ideal,
+          BExp,
+          GExp,
+          BelPer
+          )
+    
+    subLong <- cbind(subLong,
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "M", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "I", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "P", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "St", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Ent", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Sim", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Proto", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "SzSch", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "SzUS", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "A", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "D", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "ThermIn", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "ThermOut", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "MemUnc", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "IdUnc", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Should", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Consist", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Salient", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "Ideal", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "BExp", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "GExp", "all"))),
+    unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "BelPer", "all")))
+    )
+    
+    # identity to identity network total edges
+    idEdgT <- ecount(subNetUW)
+    # density
+    density <- edge_density(subNetUW)
+    # average distance
+    aveDist <- mean_distance(subNetUW)
+    # clustering coefficient
+    idTrans <- transitivity(subNetUW, "global")
+    # small worldness
+    # global efficiency
+    globEff <- brainGraph::efficiency(subNetUW, type = "global")
+    # Mean strength
+    meanStre <- mean(strength(subNetW))
+    # Sum strength
+    sumStre <- sum(strength(subNetW))
+    # Similarity mean
+    idSimGlob <- (similarity(subNetW, method = "dice"))%>% .[lower.tri(.)] %>% mean()
+    # Ave strength
+    # assortativity identification
+    homophs <- unlist(
+      lapply(varnames, function(x) assortativityNA(subNetUW, as.numeric(
+      vertex_attr(subNetUW, x) +
+      rnorm(1, 0, .00001), 
+      directed=F
+      )))
+    )
+    names(homophs) <- paste0(varnames,"_homoph")
+    
+    subShort <- c(subID,i,idEdgT,density,aveDist,idTrans,globEff, numIdentities, meanStre, sumStre, idSimGlob, homophs)
+    
+    timeLong <- rbind(timeLong, subLong)
+    timeShort <- rbind(timeShort, subShort)
+  }
+  fullLong <- rbind(fullLong, timeLong)
+  fullShort <- rbind(subShort, timeShort)
+}
+
+fullLong <- as.data.frame(fullLong)
+begNames <- c("subID","identity","idCode","Time", "degree", "outdegree", "indegree", "strength")
+colnames(fullLong)[1:length(begNames)] <- begNames
+neighNames <- paste0(colnames(fullLong)[which(colnames(fullLong)=="M"):which(colnames(fullLong)=="BelPer")],"_neigh")
+colnames(fullLong)[(which(colnames(fullLong)=="BelPer")+1):((which(colnames(fullLong)=="BelPer"))+length(neighNames))] <- neighNames
+fullLong[3:ncol(fullLong)] <- apply(fullLong[3:ncol(fullLong)], 2, as.numeric)
+
+begNames <- c("subID","Time","edgeTot","dense","aveDist","idTrans","globEff","numID","meanStre","sumStre","idSimGlob")
+colnames(fullShort)[1:length(begNames)] <- begNames
+fullShort <- as.data.frame(fullShort)
+```
+
+# Remove duplicate rows
+
+```{r}
+# fullLong[!duplicated(fullLong), ]
+# 
+# fullLong %>% distinct()
+
+test <- subset(fullLong, subID==59360)
+```
+
+
+# Change
+
+```{r}
+for(n in 2:4){
+  uIds <- unique(fullLong$subID[fullLong$Time==n])
+  for(j in 1:length(uIds)){
+    subID <- uIds[j]
+    uIdentities <- unique(fullLong$identity[fullLong$subID==subID])
+    for(k in 1:length(uIdentities)){
+      identity <- uIdentities[k]
+      fullLong$I_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+    }
+  }
+}
+```
+
+# Cumulative
+
+```{r}
+for(n in 1:4){
+  uIds <- unique(fullLong$subID[fullLong$Time==n])
+  for(j in 1:length(uIds)){
+    subID <- uIds[j]
+    uIdentities <- unique(fullLong$identity[fullLong$subID==subID])
+    for(k in 1:length(uIdentities)){
+      identity <- uIdentities[k]
+      
+      fullLong$I_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$I_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      fullLong$Consist_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Consist_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      fullLong$Salient_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Salient_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+    fullLong$St_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$St[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$St_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$St[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+    fullLong$GExp_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$GExp_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+    fullLong$BExp_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$BExp_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      fullLong$Should_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Should_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      fullLong$IdUnc_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$IdUnc_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      fullLong$MemUnc_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$MemUnc_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+    }
+  }
+}
+```
+
+
+
+```{r}
+write.csv(fullLong,"../Data/longIdentityNet.csv", row.names = F)
+write.csv(fullLong,"../Data/shortIdentityNet.csv", row.names = F)
+```
+
+
+
 
