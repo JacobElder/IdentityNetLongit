@@ -1,0 +1,160 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(groundhog)
+pkgs <-  c("tidyverse","here", "igraph")
+groundhog.day <- '2022-07-25'
+groundhog.library(pkgs, groundhog.day)
+here::i_am("cleaning/idNetCleaning.Rmd")
+```
+
+```{r}
+T1raw <- data.table::fread(here("cleaning/input/rawT1.csv"))
+T2raw <- data.table::fread(here("cleaning/input/rawT2.csv"))
+T3raw <- data.table::fread(here("cleaning/input/rawT3.csv"))
+T4raw <- data.table::fread(here("cleaning/input/rawT4.csv"))
+
+setwd("~/Google Drive/Volumes/")
+posDf <- read.csv("./Research Project/Trait Network_Behaviral/generating network/output/adjacencyMatrix_p.csv")
+posMat <- as.matrix(posDf)
+posGraph <- graph.adjacency(posMat)
+negDf <- read.csv("./Research Project/Trait Network_Behaviral/generating network/output/adjacencyMatrix_n.csv")
+negMat <- as.matrix(negDf)
+negGraph <- graph.adjacency(negMat)
+```
+
+# Create functions
+
+```{r}
+is.emptyString <- function(input){
+  if(input==''){
+    output <- TRUE
+  }else{
+    output <- FALSE
+  }
+  return(output)
+}
+```
+
+
+# Fixed duplicated names
+
+```{r}
+# Duplicate columns
+wrong <- which(colnames(T1raw)=="I9_Sims_1")[1]
+colnames(T1raw)[wrong:(wrong+14)] <- paste0("I8_Sims_",1:15)
+
+# Fix the identity nominations columns
+noms <- which(colnames(T1raw)=="Identity Nominations_1")[1]
+colnames(T1raw)[noms:(noms+14)] <- paste0("IdNoms_",1:15)
+
+T1raw <- as_tibble(T1raw)
+T2raw <- as_tibble(T2raw)
+T3raw <- as_tibble(T3raw)
+T4raw <- as_tibble(T4raw)
+```
+
+```{r}
+T1raw <- T1raw %>% rename(subID = id)
+T2raw <- T2raw %>% rename(subID = id)
+T3raw <- T3raw %>% rename(subID = id)
+T4raw <- T4raw %>% rename(subID = id)
+
+t1tot2subs <- intersect(T1raw$subID, T2raw$subID)
+
+T1raw <- T1raw[T1raw$subID %in% t1tot2subs,]
+
+T1raw <- T1raw[!duplicated(T1raw$subID),]
+```
+
+```{r}
+
+
+idMat <- matrix(NA,ncol=16,nrow=nrow(T1raw))
+for(n in 1:nrow(T1raw) ){
+  identities <- T1raw %>% 
+    select(IdNoms_1:IdNoms_15) %>%
+    slice(n) %>%
+    as_vector()
+  
+  idIndices <- identities %>%
+    map(is.emptyString) %>%
+    unlist()
+  
+  identities[idIndices] <- NA
+  
+  idMat[n,] <- c(T1raw$subID[n], identities)
+  
+  
+    
+}
+
+idMat <- as_tibble(idMat)
+colnames(idMat) <- c("subID",paste0("I",1:16))
+```
+
+```{r}
+allNA <- which( rowSums(is.na(idMat[,2:16])) != 15 ) # which rows are not all NA
+notallNAsubs <- idMat$subID[allNA]
+T1raw <- T1raw[T1raw$subID %in% notallNAsubs,]
+```
+
+
+```{r}
+uIds <- unique(T1raw$id)
+# column names
+idSubs <- T1raw %>%
+  select(contains("_Relations"))
+for(n in 1:nrow(T1raw)){
+  i <- T1raw$subID[n]
+  
+  idNames <- idMat[idMat$subID==i,2:16] %>% as_vector() %>% na.omit()
+  numIdentities <- sum(!is.na(idMat[idMat$subID==i,2:16]))
+  
+  # subset subject row
+  subDf <- T1raw[T1raw$subID==i,]
+  # generate empty matrix
+  subMat <- matrix(data = 0, nrow = numIdentities, ncol = numIdentities)
+  subMatW <- matrix(data = 0, nrow = numIdentities, ncol = numIdentities)
+  for(c in 1:numIdentities){
+    # subset identity "c"
+    j <- idSubs[n,c]
+    # split words by comma
+    selectWord <-strsplit(as.character(idSubs[n,c][[1]]),",") 
+    # which column index are select identities
+    ######rowSub <-which(idNames %in% selectWord[[1]])
+    # populate 1s for select identities in row
+    subMat[c,as.numeric(unlist(selectWord))] <- 1 # Unweighted matrix
+    diag(subMat) <- 0 # Set diagonal to 0s if participants nominated any self-connections
+    subMatW[c,as.numeric(unlist(selectWord))]  <- as.numeric ( T1raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(selectWord) ))] ) # Weighted matrix
+    # if participant didn't indicate weight, replace with 0
+    subMatW[is.na(subMatW)] <- 0
+    # Flipped direction of fraction so more overlap is closer between identities
+    
+    diag(subMatW) <- 0 # Set diagonal to 0s if participants nominated any self-connections
+}
+  rownames(subMat) <- idNames
+  colnames(subMat) <- idNames
+  
+  rownames(subMatW) <- idNames
+  colnames(subMatW) <- idNames
+
+    # convert to graph
+  subGraph <- graph.adjacency(subMat)
+  subGraphW <- graph.adjacency(subMatW, weighted = T)
+  # label
+  assign(paste0("subIMat.",i),subMat)
+  assign(paste0("subIGraph.",i),subGraph)
+  
+  assign(paste0(".",i),subMatW)
+  assign(paste0("subIGraphW.",i),subGraphW)
+}
+
+```
+```{r}
+
+```
+
