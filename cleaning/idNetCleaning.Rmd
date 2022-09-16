@@ -437,11 +437,61 @@ for(n in 1:4){
 }
 ```
 
+# Need for Cognition
+
+```{r}
+NFCrevcols = c("NFC-6_3", "NFC-6_4")
+T1raw[ ,NFCrevcols] = 8 - T1raw[ ,NFCrevcols]
+ind1 <- grep("NFC-6_1", colnames(T1raw))
+ind1<-min(ind1)
+ind2<- grep("NFC-6_6", colnames(T1raw))
+ind2<-max(ind2)
+# Compute scores for Need for Cog
+T1raw$NFC = rowMeans(T1raw[, ind1:ind2], na.rm = TRUE)
+
+psych::alpha(T1raw[ind1:ind2])
+```
+# Self-Esteem
+
+```{r}
+# Reverse code Rosenberg Self-Esteem items
+SErevcols = c("RSE2", "RSE5", "RSE6", "RSE8", "RSE9")
+T1raw[ ,SErevcols] = 5 - T1raw[ ,SErevcols]
+ind1 <- grep("^RSE1$", colnames(T1raw))
+ind1<-min(ind1)
+ind2<- grep("^RSE10$", colnames(T1raw))
+ind2<-max(ind2)
+# Compute scores for Rosenberg Self-Esteem
+T1raw$SE = rowMeans(T1raw[, ind1:ind2], na.rm = TRUE)
+T1raw$SE <- 5 - T1raw$SE
+psych::alpha(T1raw[ind1:ind2])
+```
+
+## Self-Concept Clarity
+
+```{r}
+# Reverse code Self-Concept Clarity Scale items
+SCC_revcols = c("SCC1", "SCC2", "SCC3", "SCC4", "SCC5", "SCC7", 
+                 "SCC8", "SCC9", "SCC10", "SCC12")
+T1raw[ ,SCC_revcols] = 6 - T1raw[ ,SCC_revcols]
+ind1 <- grep("SCC1", colnames(T1raw))
+ind1<-min(ind1)
+ind2<- grep("SCC12", colnames(T1raw))
+ind2<-max(ind2)
+# Compute score for Self-Concept Clarity Scale items
+T1raw$SCC = rowMeans(T1raw[,ind1:ind2], na.rm = TRUE)
+
+psych::alpha(T1raw[ind1:ind2])
+```
+
+```{r}
+fullShort <- T1raw %>% select(subID, SE, SCC, NFC) %>% right_join(fullShort, by = "subID")
+```
 
 
 ```{r}
 write.csv(fullLong,"../Data/longIdentityNet.csv", row.names = F)
-write.csv(fullLong,"../Data/shortIdentityNet.csv", row.names = F)
+write.csv(fullShort,"../Data/shortIdentityNet.csv", row.names = F)
 ```
 
 

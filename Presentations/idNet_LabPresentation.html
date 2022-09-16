@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="idNet_LabPresentation_files/libs/clipboard/clipboard.min.js"></script>
+<script src="idNet_LabPresentation_files/libs/quarto-html/tabby.min.js"></script>
+<script src="idNet_LabPresentation_files/libs/quarto-html/popper.min.js"></script>
+<script src="idNet_LabPresentation_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="idNet_LabPresentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="idNet_LabPresentation_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="idNet_LabPresentation_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.1.245">
+
+  <title>Longitudinal Modeling of Identity Relations and Experiences</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="idNet_LabPresentation_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="idNet_LabPresentation_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="idNet_LabPresentation_files/libs/revealjs/dist/theme/quarto.css" id="theme">
+  <link href="idNet_LabPresentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="idNet_LabPresentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="idNet_LabPresentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="idNet_LabPresentation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-captioned.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-captioned) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-captioned.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-captioned .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-captioned .callout-caption  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-captioned.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-captioned.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-caption {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-caption {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-caption {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-captioned .callout-body > .callout-content > :last-child {
+    margin-bottom: 0.5rem;
+  }
+
+  .callout.callout-captioned .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-captioned) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-caption {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-caption {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-caption {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-caption {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-caption {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  
+  <script src="idNet_LabPresentation_files/libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="idNet_LabPresentation_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="center">
+  <h1 class="title">Longitudinal Modeling of Identity Relations and Experiences</h1>
+</section>
+
+<section>
+<section id="background" class="title-slide slide level1 center">
+<h1>Background</h1>
+
+</section>
+<section id="motivations-to-identify-with-social-groups" class="slide level2">
+<h2>Motivations to identify with social groups</h2>
+<ul>
+<li>XXX</li>
+<li>XXX</li>
+<li></li>
+</ul>
+</section>
+<section id="multiple-identities" class="slide level2">
+<h2>Multiple Identities</h2>
+<ul>
+<li>XXX</li>
+<li>XXX</li>
+</ul>
+</section>
+<section id="items" class="slide level2">
+<h2>Items</h2>
+<ul>
+<li><p><strong>Identification:</strong> I identify as XXX.</p></li>
+<li><p><strong>Positivity:</strong> How positive do you feel about being a member of this group: XX</p></li>
+<li><p><strong>Mutability:</strong> It is easy to leave membership of this group: XX</p></li>
+<li><p><strong>Entitativity:</strong> XX is a cohesive, united, and tight-knit group.</p></li>
+<li><p><strong>Group Similarity:</strong> XX people are similar to each other.</p></li>
+<li><p><strong>Self-Prototypicality:</strong> I am representative and fit the description of what it means to be XX</p></li>
+</ul>
+</section>
+<section id="items-continued" class="slide level2">
+<h2>Items (continued)</h2>
+<ul>
+<li><p><strong>Stigma:</strong> How stigmatized is XX ?</p></li>
+<li><p><strong>Size:</strong> To what extent do you feel your XX identity is small and not well-represented (i.e., minority) or large and well-represented (i.e., majority) at your university and in the United States?</p></li>
+<li><p><strong>Assimilation:</strong> I am included in the XX group and fit in/belong.</p></li>
+<li><p><strong>Differentiation:</strong> This group is distinct and different from other groups: XX</p></li>
+</ul>
+</section>
+<section id="items-continued-1" class="slide level2">
+<h2>Items (continued)</h2>
+<ul>
+<li><strong>Warmth:</strong> Next we would like to get your feelings towards your XX identity and other XX groups using something we call the feeling thermometer that ranges from 0 to 100.</li>
+</ul>
+<!-- -->
+<ul>
+<li><p><strong>Membership Uncertainty:</strong> I feel uncertain that I will be accepted by others as typical/representative of being XX</p></li>
+<li><p><strong>Identity Uncertainty:</strong> I feel uncertain about the characteristics that define being XX</p></li>
+</ul>
+</section>
+<section id="items-continued-2" class="slide level2">
+<h2>Items (continued)</h2>
+<ul>
+<li><p><strong>Should:</strong> How often do you feel that you <u><em>should</em></u> engage in behaviors consistent with being XX? Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.</p></li>
+<li><p><strong>Consistent:</strong> As of the past 1-2 weeks, I engaged in behaviors, thoughts, and feelings consistent with being XX. Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.</p></li>
+</ul>
+</section>
+<section id="items-continued-3" class="slide level2">
+<h2>Items (continued)</h2>
+<ul>
+<li><p><strong>Salient:</strong> As of the past 1-2 weeks, how often did you have salient or meaningful experiences related to being XX? Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.</p></li>
+<li><p><strong>Ideal:</strong> How important is it to you to belong to this group: XX?</p></li>
+<li><p><strong>Bad Experiences:</strong> As of the past 1-2 weeks, how many threatening, stressful, or stigmatizing experiences have you had related to being XX?</p></li>
+</ul>
+</section>
+<section id="items-continued-4" class="slide level2">
+<h2>Items (continued)</h2>
+<ul>
+<li><p><strong>Good Experiences:</strong> As of the past 1-2 weeks, how many positive and affirming experiences have you had related to being XX?</p></li>
+<li><p><strong>Categorized:</strong> As of the past 1-2 weeks,&nbsp;others perceive me as belonging to this group: XX.</p></li>
+</ul>
+</section></section>
+<section>
+<section id="identification-as-a-function-of-identity-relevant-experiences" class="title-slide slide level1 center">
+<h1>Identification as a Function of Identity-Relevant Experiences</h1>
+
+</section>
+<section id="salient-identity-relevant-events-predict-greater-social-identification" class="slide level2">
+<h2>Salient identity-relevant events predict greater social identification</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 5.739210 </td>
+   <td style="text-align:right;"> 0.1472259 </td>
+   <td style="text-align:right;"> 38.982326 </td>
+   <td style="text-align:right;"> 45.67050 </td>
+   <td style="text-align:right;"> 0.00e+00 </td>
+   <td style="text-align:right;"> 5.4428014 </td>
+   <td style="text-align:right;"> 6.0356177 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Salient </td>
+   <td style="text-align:right;"> 0.099669 </td>
+   <td style="text-align:right;"> 0.0224607 </td>
+   <td style="text-align:right;"> 4.437482 </td>
+   <td style="text-align:right;"> 42.08862 </td>
+   <td style="text-align:right;"> 6.44e-05 </td>
+   <td style="text-align:right;"> 0.0543443 </td>
+   <td style="text-align:right;"> 0.1449937 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="positive-experiences-predict-greater-social-identification" class="slide level2">
+<h2>Positive Experiences Predict Greater Social Identification</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0805212 </td>
+   <td style="text-align:right;"> 0.0827316 </td>
+   <td style="text-align:right;"> -0.9732823 </td>
+   <td style="text-align:right;"> 81.75574 </td>
+   <td style="text-align:right;"> 0.3332839 </td>
+   <td style="text-align:right;"> -0.2451080 </td>
+   <td style="text-align:right;"> 0.0840657 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> GExp.Z </td>
+   <td style="text-align:right;"> 0.1046308 </td>
+   <td style="text-align:right;"> 0.0475958 </td>
+   <td style="text-align:right;"> 2.1983208 </td>
+   <td style="text-align:right;"> 40.93828 </td>
+   <td style="text-align:right;"> 0.0336366 </td>
+   <td style="text-align:right;"> 0.0085048 </td>
+   <td style="text-align:right;"> 0.2007568 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> BExp.Z </td>
+   <td style="text-align:right;"> -0.0254634 </td>
+   <td style="text-align:right;"> 0.0458600 </td>
+   <td style="text-align:right;"> -0.5552421 </td>
+   <td style="text-align:right;"> 63.77158 </td>
+   <td style="text-align:right;"> 0.5806716 </td>
+   <td style="text-align:right;"> -0.1170856 </td>
+   <td style="text-align:right;"> 0.0661588 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="feeling-prototypical-predicts-social-identification" class="slide level2">
+<h2>Feeling Prototypical Predicts Social Identification</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0419281 </td>
+   <td style="text-align:right;"> 0.0701081 </td>
+   <td style="text-align:right;"> -0.5980497 </td>
+   <td style="text-align:right;"> 81.27645 </td>
+   <td style="text-align:right;"> 0.5514696 </td>
+   <td style="text-align:right;"> -0.1814140 </td>
+   <td style="text-align:right;"> 0.0975578 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Proto.Z </td>
+   <td style="text-align:right;"> 0.3450965 </td>
+   <td style="text-align:right;"> 0.0397709 </td>
+   <td style="text-align:right;"> 8.6771165 </td>
+   <td style="text-align:right;"> 82.35983 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.2659847 </td>
+   <td style="text-align:right;"> 0.4242082 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Time.Z </td>
+   <td style="text-align:right;"> -0.0746795 </td>
+   <td style="text-align:right;"> 0.0308352 </td>
+   <td style="text-align:right;"> -2.4218930 </td>
+   <td style="text-align:right;"> 38.19378 </td>
+   <td style="text-align:right;"> 0.0202939 </td>
+   <td style="text-align:right;"> -0.1370916 </td>
+   <td style="text-align:right;"> -0.0122673 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Proto.Z:Time.Z </td>
+   <td style="text-align:right;"> 0.0423697 </td>
+   <td style="text-align:right;"> 0.0219453 </td>
+   <td style="text-align:right;"> 1.9306914 </td>
+   <td style="text-align:right;"> 465.43029 </td>
+   <td style="text-align:right;"> 0.0541283 </td>
+   <td style="text-align:right;"> -0.0007545 </td>
+   <td style="text-align:right;"> 0.0854939 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<section id="feeling-assimilated-predicts-greater-identification" class="slide level2">
+<h2>Feeling assimilated predicts greater identification</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0022384 </td>
+   <td style="text-align:right;"> 0.0594939 </td>
+   <td style="text-align:right;"> -0.0376241 </td>
+   <td style="text-align:right;"> 82.45040 </td>
+   <td style="text-align:right;"> 0.9700784 </td>
+   <td style="text-align:right;"> -0.1205811 </td>
+   <td style="text-align:right;"> 0.1161043 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> A.Z </td>
+   <td style="text-align:right;"> 0.4015520 </td>
+   <td style="text-align:right;"> 0.0430764 </td>
+   <td style="text-align:right;"> 9.3218473 </td>
+   <td style="text-align:right;"> 87.33973 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.3159376 </td>
+   <td style="text-align:right;"> 0.4871664 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Time.Z </td>
+   <td style="text-align:right;"> -0.0694829 </td>
+   <td style="text-align:right;"> 0.0253782 </td>
+   <td style="text-align:right;"> -2.7378995 </td>
+   <td style="text-align:right;"> 50.06932 </td>
+   <td style="text-align:right;"> 0.0085392 </td>
+   <td style="text-align:right;"> -0.1204547 </td>
+   <td style="text-align:right;"> -0.0185111 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> A.Z:Time.Z </td>
+   <td style="text-align:right;"> 0.0659360 </td>
+   <td style="text-align:right;"> 0.0203865 </td>
+   <td style="text-align:right;"> 3.2343044 </td>
+   <td style="text-align:right;"> 394.64090 </td>
+   <td style="text-align:right;"> 0.0013221 </td>
+   <td style="text-align:right;"> 0.0258564 </td>
+   <td style="text-align:right;"> 0.1060157 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<section id="more-positive-and-less-bad-experiences-predict-more-belonging" class="slide level2">
+<h2>More Positive and Less Bad Experiences Predict More Belonging</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0067892 </td>
+   <td style="text-align:right;"> 0.0636394 </td>
+   <td style="text-align:right;"> -0.106683 </td>
+   <td style="text-align:right;"> 89.60550 </td>
+   <td style="text-align:right;"> 0.9152789 </td>
+   <td style="text-align:right;"> -0.1332275 </td>
+   <td style="text-align:right;"> 0.1196491 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> GExp.Z </td>
+   <td style="text-align:right;"> 0.3908447 </td>
+   <td style="text-align:right;"> 0.0423603 </td>
+   <td style="text-align:right;"> 9.226679 </td>
+   <td style="text-align:right;"> 81.10842 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.3065627 </td>
+   <td style="text-align:right;"> 0.4751266 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> BExp.Z </td>
+   <td style="text-align:right;"> 0.0878702 </td>
+   <td style="text-align:right;"> 0.0380053 </td>
+   <td style="text-align:right;"> 2.312048 </td>
+   <td style="text-align:right;"> 79.19124 </td>
+   <td style="text-align:right;"> 0.0233739 </td>
+   <td style="text-align:right;"> 0.0122253 </td>
+   <td style="text-align:right;"> 0.1635151 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> GExp.Z:BExp.Z </td>
+   <td style="text-align:right;"> -0.0638825 </td>
+   <td style="text-align:right;"> 0.0306042 </td>
+   <td style="text-align:right;"> -2.087374 </td>
+   <td style="text-align:right;"> 241.99143 </td>
+   <td style="text-align:right;"> 0.0379008 </td>
+   <td style="text-align:right;"> -0.1241672 </td>
+   <td style="text-align:right;"> -0.0035978 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<section id="perceiving-group-members-as-similar-predicts-more-identification" class="slide level2">
+<h2>Perceiving group members as similar predicts more identification</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.1090898 </td>
+   <td style="text-align:right;"> 0.0818121 </td>
+   <td style="text-align:right;"> -1.333419 </td>
+   <td style="text-align:right;"> 84.61496 </td>
+   <td style="text-align:right;"> 0.1859730 </td>
+   <td style="text-align:right;"> -0.2717649 </td>
+   <td style="text-align:right;"> 0.0535853 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Sim.Z </td>
+   <td style="text-align:right;"> 0.1947977 </td>
+   <td style="text-align:right;"> 0.0386200 </td>
+   <td style="text-align:right;"> 5.043959 </td>
+   <td style="text-align:right;"> 89.58991 </td>
+   <td style="text-align:right;"> 0.0000024 </td>
+   <td style="text-align:right;"> 0.1180676 </td>
+   <td style="text-align:right;"> 0.2715279 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Time.Z </td>
+   <td style="text-align:right;"> -0.0564131 </td>
+   <td style="text-align:right;"> 0.0330777 </td>
+   <td style="text-align:right;"> -1.705472 </td>
+   <td style="text-align:right;"> 33.06079 </td>
+   <td style="text-align:right;"> 0.0974868 </td>
+   <td style="text-align:right;"> -0.1237055 </td>
+   <td style="text-align:right;"> 0.0108793 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Sim.Z:Time.Z </td>
+   <td style="text-align:right;"> 0.0468142 </td>
+   <td style="text-align:right;"> 0.0234059 </td>
+   <td style="text-align:right;"> 2.000104 </td>
+   <td style="text-align:right;"> 324.18781 </td>
+   <td style="text-align:right;"> 0.0463229 </td>
+   <td style="text-align:right;"> 0.0007676 </td>
+   <td style="text-align:right;"> 0.0928609 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section id="perceiving-self-as-representative-of-group-predicts-more-identification" class="slide level2">
+<h2>Perceiving self as representative of group predicts more identification</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0695533 </td>
+   <td style="text-align:right;"> 0.0717283 </td>
+   <td style="text-align:right;"> -0.9696774 </td>
+   <td style="text-align:right;"> 82.08451 </td>
+   <td style="text-align:right;"> 0.3350559 </td>
+   <td style="text-align:right;"> -0.2122415 </td>
+   <td style="text-align:right;"> 0.0731349 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Proto.Z </td>
+   <td style="text-align:right;"> 0.3113448 </td>
+   <td style="text-align:right;"> 0.0388752 </td>
+   <td style="text-align:right;"> 8.0088364 </td>
+   <td style="text-align:right;"> 77.85269 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.2339480 </td>
+   <td style="text-align:right;"> 0.3887416 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Time.Z </td>
+   <td style="text-align:right;"> -0.0648307 </td>
+   <td style="text-align:right;"> 0.0298881 </td>
+   <td style="text-align:right;"> -2.1691155 </td>
+   <td style="text-align:right;"> 35.54396 </td>
+   <td style="text-align:right;"> 0.0368443 </td>
+   <td style="text-align:right;"> -0.1254736 </td>
+   <td style="text-align:right;"> -0.0041878 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Proto.Z:Time.Z </td>
+   <td style="text-align:right;"> 0.0458542 </td>
+   <td style="text-align:right;"> 0.0220274 </td>
+   <td style="text-align:right;"> 2.0816919 </td>
+   <td style="text-align:right;"> 423.70919 </td>
+   <td style="text-align:right;"> 0.0379703 </td>
+   <td style="text-align:right;"> 0.0025577 </td>
+   <td style="text-align:right;"> 0.0891508 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<section id="stigma-perception-predicts-greater-membership-uncertainty" class="slide level2">
+<h2>Stigma Perception Predicts Greater Membership Uncertainty</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 15px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 0.0361658 </td>
+   <td style="text-align:right;"> 0.0666939 </td>
+   <td style="text-align:right;"> 0.5422659 </td>
+   <td style="text-align:right;"> 73.06447 </td>
+   <td style="text-align:right;"> 0.5892855 </td>
+   <td style="text-align:right;"> -0.0967529 </td>
+   <td style="text-align:right;"> 0.1690845 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> St.Z </td>
+   <td style="text-align:right;"> 0.1240680 </td>
+   <td style="text-align:right;"> 0.0491655 </td>
+   <td style="text-align:right;"> 2.5234741 </td>
+   <td style="text-align:right;"> 56.22632 </td>
+   <td style="text-align:right;"> 0.0144731 </td>
+   <td style="text-align:right;"> 0.0255863 </td>
+   <td style="text-align:right;"> 0.2225496 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Time.Z </td>
+   <td style="text-align:right;"> -0.0608895 </td>
+   <td style="text-align:right;"> 0.0361905 </td>
+   <td style="text-align:right;"> -1.6824719 </td>
+   <td style="text-align:right;"> 32.70846 </td>
+   <td style="text-align:right;"> 0.1020015 </td>
+   <td style="text-align:right;"> -0.1345445 </td>
+   <td style="text-align:right;"> 0.0127656 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> St.Z:Time.Z </td>
+   <td style="text-align:right;"> 0.0621607 </td>
+   <td style="text-align:right;"> 0.0272176 </td>
+   <td style="text-align:right;"> 2.2838433 </td>
+   <td style="text-align:right;"> 388.70935 </td>
+   <td style="text-align:right;"> 0.0229194 </td>
+   <td style="text-align:right;"> 0.0086486 </td>
+   <td style="text-align:right;"> 0.1156727 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section></section>
+<section>
+<section id="propagation" class="title-slide slide level1 center">
+<h1>Propagation</h1>
+
+</section>
+<section id="spread-of-positivity" class="slide level2">
+<h2>Spread of Positivity</h2>
+<p>As identity perceived more positively, it’s neighboring connected identities are also perceived more positively</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 6.2884937 </td>
+   <td style="text-align:right;"> 0.3246017 </td>
+   <td style="text-align:right;"> 19.372951 </td>
+   <td style="text-align:right;"> 170.1908 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 5.6477296 </td>
+   <td style="text-align:right;"> 6.9292579 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> P </td>
+   <td style="text-align:right;"> -0.1156879 </td>
+   <td style="text-align:right;"> 0.0519866 </td>
+   <td style="text-align:right;"> -2.225341 </td>
+   <td style="text-align:right;"> 242.5044 </td>
+   <td style="text-align:right;"> 0.0269786 </td>
+   <td style="text-align:right;"> -0.2180908 </td>
+   <td style="text-align:right;"> -0.0132850 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> Time </td>
+   <td style="text-align:right;"> -0.3206886 </td>
+   <td style="text-align:right;"> 0.1241699 </td>
+   <td style="text-align:right;"> -2.582660 </td>
+   <td style="text-align:right;"> 284.3020 </td>
+   <td style="text-align:right;"> 0.0103042 </td>
+   <td style="text-align:right;"> -0.5650975 </td>
+   <td style="text-align:right;"> -0.0762797 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> P:Time </td>
+   <td style="text-align:right;"> 0.0530021 </td>
+   <td style="text-align:right;"> 0.0205983 </td>
+   <td style="text-align:right;"> 2.573126 </td>
+   <td style="text-align:right;"> 615.5310 </td>
+   <td style="text-align:right;"> 0.0103115 </td>
+   <td style="text-align:right;"> 0.0125506 </td>
+   <td style="text-align:right;"> 0.0934537 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+<img data-src="idNet_LabPresentation_files/figure-revealjs/unnamed-chunk-12-1.png" width="960" class="r-stretch"></section></section>
+<section>
+<section id="degree-centrality-and-identity-strength" class="title-slide slide level1 center">
+<h1>Degree Centrality and Identity Strength</h1>
+
+</section>
+<section id="strength-of-identification" class="slide level2">
+<h2>Strength of identification</h2>
+<p><strong><em>Number of connections does not predict strength of identification</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0357200 </td>
+   <td style="text-align:right;"> 0.0803147 </td>
+   <td style="text-align:right;"> -0.4447505 </td>
+   <td style="text-align:right;"> 82.23246 </td>
+   <td style="text-align:right;"> 0.6576685 </td>
+   <td style="text-align:right;"> -0.1954849 </td>
+   <td style="text-align:right;"> 0.1240448 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> degree.Z </td>
+   <td style="text-align:right;"> 0.1024279 </td>
+   <td style="text-align:right;"> 0.0726810 </td>
+   <td style="text-align:right;"> 1.4092799 </td>
+   <td style="text-align:right;"> 32.92390 </td>
+   <td style="text-align:right;"> 0.1681283 </td>
+   <td style="text-align:right;"> -0.0454557 </td>
+   <td style="text-align:right;"> 0.2503115 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><strong><em>But strength of connections <u>does</u> predict strength of identification</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0303025 </td>
+   <td style="text-align:right;"> 0.0751569 </td>
+   <td style="text-align:right;"> -0.4031897 </td>
+   <td style="text-align:right;"> 86.57337 </td>
+   <td style="text-align:right;"> 0.6878027 </td>
+   <td style="text-align:right;"> -0.1796954 </td>
+   <td style="text-align:right;"> 0.1190904 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> strength.Z </td>
+   <td style="text-align:right;"> 0.1333219 </td>
+   <td style="text-align:right;"> 0.0456912 </td>
+   <td style="text-align:right;"> 2.9178868 </td>
+   <td style="text-align:right;"> 32.42092 </td>
+   <td style="text-align:right;"> 0.0063559 </td>
+   <td style="text-align:right;"> 0.0402992 </td>
+   <td style="text-align:right;"> 0.2263445 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="ability-to-leave-group-membership-i.e.-mutability" class="slide level2">
+<h2>Ability to leave group membership (i.e., mutability)</h2>
+<p><strong><em>Number of connections marginally negatively predicts mutability</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0161564 </td>
+   <td style="text-align:right;"> 0.0753545 </td>
+   <td style="text-align:right;"> -0.2144053 </td>
+   <td style="text-align:right;"> 116.60460 </td>
+   <td style="text-align:right;"> 0.8306055 </td>
+   <td style="text-align:right;"> -0.1653972 </td>
+   <td style="text-align:right;"> 0.1330844 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> degree.Z </td>
+   <td style="text-align:right;"> -0.1163365 </td>
+   <td style="text-align:right;"> 0.0627417 </td>
+   <td style="text-align:right;"> -1.8542131 </td>
+   <td style="text-align:right;"> 37.25989 </td>
+   <td style="text-align:right;"> 0.0716371 </td>
+   <td style="text-align:right;"> -0.2434334 </td>
+   <td style="text-align:right;"> 0.0107604 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><strong><em>Strength of connections more strongly negatively predicts mutability</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0287492 </td>
+   <td style="text-align:right;"> 0.0755357 </td>
+   <td style="text-align:right;"> -0.3806038 </td>
+   <td style="text-align:right;"> 112.55501 </td>
+   <td style="text-align:right;"> 0.7042146 </td>
+   <td style="text-align:right;"> -0.1784054 </td>
+   <td style="text-align:right;"> 0.1209071 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> strength.Z </td>
+   <td style="text-align:right;"> -0.1325145 </td>
+   <td style="text-align:right;"> 0.0621108 </td>
+   <td style="text-align:right;"> -2.1335188 </td>
+   <td style="text-align:right;"> 33.33855 </td>
+   <td style="text-align:right;"> 0.0403287 </td>
+   <td style="text-align:right;"> -0.2588310 </td>
+   <td style="text-align:right;"> -0.0061979 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="positivity-of-group" class="slide level2">
+<h2>Positivity of group</h2>
+<p><strong><em>Number of connections <u>don’t</u> predict positivity</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0465174 </td>
+   <td style="text-align:right;"> 0.0801609 </td>
+   <td style="text-align:right;"> -0.5803007 </td>
+   <td style="text-align:right;"> 95.1064 </td>
+   <td style="text-align:right;"> 0.5630843 </td>
+   <td style="text-align:right;"> -0.2056547 </td>
+   <td style="text-align:right;"> 0.1126198 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> degree.Z </td>
+   <td style="text-align:right;"> 0.0796573 </td>
+   <td style="text-align:right;"> 0.0526987 </td>
+   <td style="text-align:right;"> 1.5115596 </td>
+   <td style="text-align:right;"> 18.9923 </td>
+   <td style="text-align:right;"> 0.1471068 </td>
+   <td style="text-align:right;"> -0.0306455 </td>
+   <td style="text-align:right;"> 0.1899600 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><strong><em>Strength of connections <u>do</u> more strongly negatively predicts positivity</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0339820 </td>
+   <td style="text-align:right;"> 0.0788554 </td>
+   <td style="text-align:right;"> -0.430941 </td>
+   <td style="text-align:right;"> 93.25216 </td>
+   <td style="text-align:right;"> 0.6675058 </td>
+   <td style="text-align:right;"> -0.1905675 </td>
+   <td style="text-align:right;"> 0.1226035 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> strength.Z </td>
+   <td style="text-align:right;"> 0.1181043 </td>
+   <td style="text-align:right;"> 0.0538485 </td>
+   <td style="text-align:right;"> 2.193269 </td>
+   <td style="text-align:right;"> 21.03784 </td>
+   <td style="text-align:right;"> 0.0396643 </td>
+   <td style="text-align:right;"> 0.0061324 </td>
+   <td style="text-align:right;"> 0.2300761 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="self-prototypicality" class="slide level2">
+<h2>Self-prototypicality</h2>
+<p><strong><em>Number of connections <u>don’t</u> predict self-prototypicality</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0098139 </td>
+   <td style="text-align:right;"> 0.0807318 </td>
+   <td style="text-align:right;"> -0.1215622 </td>
+   <td style="text-align:right;"> 85.97623 </td>
+   <td style="text-align:right;"> 0.9035295 </td>
+   <td style="text-align:right;"> -0.1703040 </td>
+   <td style="text-align:right;"> 0.1506761 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> degree.Z </td>
+   <td style="text-align:right;"> 0.0814771 </td>
+   <td style="text-align:right;"> 0.0517653 </td>
+   <td style="text-align:right;"> 1.5739717 </td>
+   <td style="text-align:right;"> 28.70219 </td>
+   <td style="text-align:right;"> 0.1264538 </td>
+   <td style="text-align:right;"> -0.0244425 </td>
+   <td style="text-align:right;"> 0.1873968 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><strong><em>Strength of connections <u>do</u> more strongly predicts self-prototypicality</em></strong></p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class=" lightable-paper lightable-hover" style="font-size: 25px; font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> effect </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> term </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> estimate </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> std.error </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> statistic </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> df </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> p.value </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.low </th>
+   <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -0.0105001 </td>
+   <td style="text-align:right;"> 0.0796698 </td>
+   <td style="text-align:right;"> -0.1317957 </td>
+   <td style="text-align:right;"> 85.42691 </td>
+   <td style="text-align:right;"> 0.8954558 </td>
+   <td style="text-align:right;"> -0.1688936 </td>
+   <td style="text-align:right;"> 0.1478933 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> fixed </td>
+   <td style="text-align:left;"> strength.Z </td>
+   <td style="text-align:right;"> 0.0919256 </td>
+   <td style="text-align:right;"> 0.0470226 </td>
+   <td style="text-align:right;"> 1.9549254 </td>
+   <td style="text-align:right;"> 28.28073 </td>
+   <td style="text-align:right;"> 0.0605409 </td>
+   <td style="text-align:right;"> -0.0043527 </td>
+   <td style="text-align:right;"> 0.1882039 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<div class="footer footer-default">
+
+</div>
+</section></section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="idNet_LabPresentation_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'smaller': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          // dispatch for htmlwidgets
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for reveal
+        if (window.Reveal) {
+          window.Reveal.addEventListener("slidechanged", function(event) {
+            fireSlideChanged(event.previousSlide, event.currentSlide);
+          });
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const clipboard = new window.ClipboardJS('.code-copy-button', {
+        target: function(trigger) {
+          return trigger.previousElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        setTimeout(function() {
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      });
+      function tippyHover(el, contentFn) {
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto-reveal',
+          placement: 'bottom-start'
+        };
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          return note.innerHTML;
+        });
+      }
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+        tippyHover(ref, function() {
+          var popup = window.document.createElement('div');
+          cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    });
+    </script>
+    
+
+</body></html>
