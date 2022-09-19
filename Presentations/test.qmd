@@ -1,0 +1,112 @@
+---
+title: "Longitudinal Modeling of Identity Relations and Experiences"
+format: revealjs
+editor: visual
+---
+
+```{r, echo=FALSE, include=FALSE}
+library(groundhog)
+pkgs <-  c("tidyverse","here", "lmerTest", "sjPlot","broom.mixed", "kableExtra", "ggeffects", "gt", "brms", "bayestestR")
+groundhog.day <- '2022-07-25'
+groundhog.library(pkgs, groundhog.day)
+here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
+```
+
+```{r, include=FALSE}
+fullLong <- read.csv(here("Data/longIdentityNet.csv"))
+fullShort <- read.csv(here("Data/shortIdentityNet.csv"))
+fullData <- fullLong %>% full_join(fullShort, by = c("subID","Time"))
+```
+
+```{r,include=FALSE}
+scaled <- apply(fullData[4:ncol(fullData)], 2, function(x) scale(x))
+colnames(scaled) <- paste0(colnames(scaled),".Z")
+fullData <- cbind(fullData, scaled)
+
+
+scaled <- apply(fullShort[2:ncol(fullShort)], 2, function(x) scale(x))
+colnames(scaled) <- paste0(colnames(scaled),".Z")
+fullShort <- cbind(fullShort, scaled)
+```
+
+```{r, include=FALSE}
+ncores = parallel::detectCores()
+options(mc.cores = parallel::detectCores())
+```
+
+# Background
+
+## Motivations to identify with social groups
+
+-   XXX
+-   XXX
+
+## Multiple Identities
+
+-   XXX
+-   XXX
+
+## Items
+
+-   **Identification:** I identify as XXX.
+
+-   **Positivity:** How positive do you feel about being a member of this group: XX
+
+-   **Mutability:** It is easy to leave membership of this group: XX
+
+-   **Entitativity:** XX is a cohesive, united, and tight-knit group.
+
+-   **Group Similarity:** XX people are similar to each other.
+
+-   **Self-Prototypicality:** I am representative and fit the description of what it means to be XX
+
+## Items (continued)
+
+-   **Stigma:** How stigmatized is XX ?
+
+-   **Size:** To what extent do you feel your XX identity is small and not well-represented (i.e., minority) or large and well-represented (i.e., majority) at your university and in the United States?
+
+-   **Assimilation:** I am included in the XX group and fit in/belong.
+
+-   **Differentiation:** This group is distinct and different from other groups: XX
+
+## Items (continued)
+
+-   **Warmth:** Next we would like to get your feelings towards your XX identity and other XX groups using something we call the feeling thermometer that ranges from 0 to 100.
+-   **Membership Uncertainty:** I feel uncertain that I will be accepted by others as typical/representative of being XX
+-   **Identity Uncertainty:** I feel uncertain about the characteristics that define being XX
+
+## Items (continued)
+
+-   **Should:** How often do you feel that you [*should*]{.underline} engage in behaviors consistent with being XX? Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.
+
+-   **Consistent:** As of the past 1-2 weeks, I engaged in behaviors, thoughts, and feelings consistent with being XX. Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.
+
+## Items (continued)
+
+-   **Salient:** As of the past 1-2 weeks, how often did you have salient or meaningful experiences related to being XX? Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.
+
+-   **Ideal:** How important is it to you to belong to this group: XX?
+
+-   **Bad Experiences:** As of the past 1-2 weeks, how many threatening, stressful, or stigmatizing experiences have you had related to being XX?
+
+## Items (continued)
+
+-   **Good Experiences:** As of the past 1-2 weeks, how many positive and affirming experiences have you had related to being XX?
+
+-   **Categorized:** As of the past 1-2 weeks, others perceive me as belonging to this group: XX.
+
+# Identification as a Function of Identity-Relevant Experiences
+
+## Salient identity-relevant events predict greater social identification
+
+```{r, echo=FALSE}
+m<-brm(I ~ Salient.Z + ( Salient.Z | subID) + (1 | identity), data=fullData, silent=TRUE, cores=ncores, refresh=0, family = cumulative("probit"))
+sexit(m) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+ggpredict(m, c("Salient.Z")) %>% plot(show.title=F) + xlab("Salience") + ylab("Social Identification") + jtools::theme_apa()
+```
+
+```{r}
+conditional_effects(m)
+```

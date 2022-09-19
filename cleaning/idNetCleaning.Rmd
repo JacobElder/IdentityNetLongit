@@ -352,7 +352,7 @@ for(i in 1:4){
     timeShort <- rbind(timeShort, subShort)
   }
   fullLong <- rbind(fullLong, timeLong)
-  fullShort <- rbind(subShort, timeShort)
+  fullShort <- rbind(fullShort, timeShort)
 }
 
 fullLong <- as.data.frame(fullLong)
@@ -485,8 +485,20 @@ psych::alpha(T1raw[ind1:ind2])
 ```
 
 ```{r}
+fullLong <- fullLong %>%
+  mutate(bias = ThermIn - ThermOut)
+biasShort <- fullLong %>% 
+  group_by(subID) %>%
+  summarise(totalBias = mean(bias, na.rm=T),
+            varBias = sd(bias, na.rm=T))
 fullShort <- T1raw %>% select(subID, SE, SCC, NFC) %>% right_join(fullShort, by = "subID")
+biasShort$subID <- as.double(biasShort$subID)
+fullShort <- fullShort %>% left_join(biasShort, by = "subID")
 ```
+
+```{r}
+```
+
 
 
 ```{r}
