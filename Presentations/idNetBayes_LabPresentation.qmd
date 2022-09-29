@@ -2,11 +2,12 @@
 title: "Longitudinal Modeling of Identity Relations and Experiences"
 format: revealjs
 editor: visual
+fontsize: .7em
 ---
 
 ```{r, echo=FALSE, include=FALSE}
 library(groundhog)
-pkgs <-  c("tidyverse","here", "lmerTest", "sjPlot","broom.mixed", "kableExtra", "ggeffects", "gt", "brms", "bayestestR")
+pkgs <-  c("tidyverse","here", "lmerTest", "sjPlot","broom.mixed", "kableExtra", "ggeffects", "gt", "brms", "bayestestR","ggdist")
 groundhog.day <- '2022-07-25'
 groundhog.library(pkgs, groundhog.day)
 here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
@@ -19,7 +20,7 @@ fullData <- fullLong %>% full_join(fullShort, by = c("subID","Time"))
 ```
 
 ```{r,include=FALSE}
-scaled <- apply(fullData[4:ncol(fullData)], 2, function(x) scale(x))
+scaled <- apply(fullData[6:ncol(fullData)], 2, function(x) scale(x))
 colnames(scaled) <- paste0(colnames(scaled),".Z")
 fullData <- cbind(fullData, scaled)
 
@@ -34,6 +35,21 @@ fullData <- fullData %>% mutate_at(c("Salient", "I", "M", "I", "P", "St", "Ent",
 ```{r, include=FALSE}
 ncores = parallel::detectCores()
 options(mc.cores = parallel::detectCores())
+```
+
+```{r, include=FALSE}
+named.contr.sum<-function(x, ...) {
+    if (is.factor(x)) {
+        x <- levels(x)
+    } else if (is.numeric(x) & length(x)==1L) {
+        stop("cannot create names with integer value. Pass factor levels")
+    }
+    x<-contr.sum(x, ...)
+    colnames(x) <- apply(x,2,function(x) 
+         paste(names(x[x>0]), names(x[x<0]), sep="-")
+    )
+    x
+}
 ```
 
 # Background
@@ -69,51 +85,47 @@ options(mc.cores = parallel::detectCores())
 -   Self-concept map (Gresky, 2005): Draw a map from 'me' to self-definitional qualities
 -   Multiple Self-Aspects Framework (McConnell, 2011) self-aspects are associated with personal attributes, which become more accessible when the self-aspect is activated and vice versa.
 -   Social Identity Mapping Tool (Cruwys et al., 2011) is a a method for visually representing and assessing a person's subjective network of group memberships.
+    -   More social identities and more compatible social identities associated with greater well-being
 
 ## Longitudinal Network Analysis
 
 -   There have been some applications of longitudinal social network analysis
-
     -   Changes in friendships (Sijtsema et al., 2010)
 
     -   Bullying changes (Rambaran et al., 2020)
 
     -   Internalizing/externalizing changes (Fortuin et al., 2015)
-
 -   Not yet applied to intrapersonal processes, such as identity relations
 
-## Procedure
+## Hypotheses
 
--   Participants recruited across 4 timepoints
+-   While there are hypotheses, this study was general quite exploratory.
+-   Salient identity-relevant events predict greater social identification.
+-   Positive experiences lead to more social identification.
+-   Changes to one identity will result in changes to other connected identities.
 
--   Indicate open ended responses for up to 15 identities/groups they belong to
+## Method
 
--   Indicate relations among each identity, and the amount of similarity between identities
-
--   Construct a weighted and unweighted graph where nodes remain static but relations change across timepoints
+-   Participants qualitatively indicate up to 15 identities/groups they affiliate with
+-   Participants indicate the category the identity belongs to (race, politics, gender, sex, hobby, occupation, etc.)
+-   Participants nominate connections between each identity and how similar they are
+-   Participants respond to a variety of self-report questions about each identity
+-   Construct weighted and unweighted networks where identities remain same but connections change across time
 
 ## Items
 
 -   **Identification:** I identify as XXX.
-
 -   **Positivity:** How positive do you feel about being a member of this group: XX
-
 -   **Mutability:** It is easy to leave membership of this group: XX
-
 -   **Entitativity:** XX is a cohesive, united, and tight-knit group.
-
 -   **Group Similarity:** XX people are similar to each other.
-
 -   **Self-Prototypicality:** I am representative and fit the description of what it means to be XX
 
 ## Items (continued)
 
 -   **Stigma:** How stigmatized is XX ?
-
 -   **Size:** To what extent do you feel your XX identity is small and not well-represented (i.e., minority) or large and well-represented (i.e., majority) at your university and in the United States?
-
 -   **Assimilation:** I am included in the XX group and fit in/belong.
-
 -   **Differentiation:** This group is distinct and different from other groups: XX
 
 ## Items (continued)
@@ -125,47 +137,158 @@ options(mc.cores = parallel::detectCores())
 ## Items (continued)
 
 -   **Should:** How often do you feel that you [*should*]{.underline} engage in behaviors consistent with being XX? Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.
-
 -   **Consistent:** As of the past 1-2 weeks, I engaged in behaviors, thoughts, and feelings consistent with being XX. Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.
 
 ## Items (continued)
 
 -   **Salient:** As of the past 1-2 weeks, how often did you have salient or meaningful experiences related to being XX? Consider how you generally think of yourself or others behaving, acting or feeling as a member of this group/identity.
-
 -   **Ideal:** How important is it to you to belong to this group: XX?
-
 -   **Bad Experiences:** As of the past 1-2 weeks, how many threatening, stressful, or stigmatizing experiences have you had related to being XX?
 
 ## Items (continued)
 
 -   **Good Experiences:** As of the past 1-2 weeks, how many positive and affirming experiences have you had related to being XX?
-
 -   **Categorized:** As of the past 1-2 weeks, others perceive me as belonging to this group: XX.
-
-## Hypotheses
-
--   While there are hypotheses, this study was general quite exploratory.
 
 ## Analysis Plan
 
 -   Modeling Likert scale outcomes using Cumulative Link model
-
 -   Evaluating magnitude and uncertainty of evidence using Bayesian modeling
-
 -   Longitudinal multilevel models (i.e., growth models) with crossed random factors for participant and social identities, repeated across four timepoints
+-   Degree centrality and identity-level self-report measures as repeated units
+
+## **Sequential Effect eXistence and sIgnificance Testing (SEXIT)**
+
+-   Centrality: the median of the posterior distribution. In probabilistic terms, there is `50%` of probability that the effect is higher and lower.
+-   Uncertainty: the `95%` Highest Density Interval (HDI). In probabilistic terms, there is `95%` of probability that the effect is within this confidence interval.
+-   Existence: The probability of direction allows to quantify the certainty by which an effect is positive or negative. It is a critical index to show that an effect of some manipulation is not harmful (for instance in clinical studies) or to assess the direction of a link.
+
+## **Sequential Effect eXistence and sIgnificance Testing (SEXIT)**
+
+-   Significance: Once existence is demonstrated with high certainty, we can assess whether the effect is of sufficient size to be considered as significant (i.e., not negligible). This is a useful index to determine which effects are actually important and worthy of discussion in a given process.
+-   Size: Finally, this index gives an idea about the strength of an effect. However, beware, as studies have shown that a big effect size can be also suggestive of low statistical power.
+
+# Network Analysis Example
+
+![](images/panel.png)
+
+# Different Categories
+
+## Degree Centrality Between Categories
+
+```{r, echo=FALSE}
+ggplot(fullData, aes(Categ, degree)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Degree Centrality",x="Category") + jtools::theme_apa()
+```
+
+------------------------------------------------------------------------
+
+### Predictions
+
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+fullData$Categ <- as.factor(fullData$Categ)
+contrasts(fullData$Categ) <- named.contr.sum(levels(fullData$Categ))
+m<-brm(degree ~  Categ + ( Categ | subID ) + ( 1 | identity), data=fullData, family = poisson, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
+```{r, echo=FALSE}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m)
+```
+
+## Indegree Centrality Between Categories
+
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(indegree ~  Categ + ( Categ | subID ) + ( 1 | identity), data=fullData, family = poisson, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
+```{r, echo=FALSE}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical=FALSE)
+```
+
+## Outdegree Centrality Between Categories
+
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(degree ~  Categ + ( Categ | subID ) + ( 1 | identity), data=fullData, family = poisson, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
+```{r, echo=FALSE}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical=FALSE)
+```
+
+## Identification
+
+```{r}
+ggplot(fullData, aes(Categ, I.Z)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Identification",x="Category") + jtools::theme_apa()
+```
+
+## Mutability
+
+```{r}
+ggplot(fullData, aes(Categ, M.Z)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Mutability",x="Category") + jtools::theme_apa()
+```
+
+## Bias
+
+```{r}
+ggplot(fullData, aes(Categ, bias)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Bias",x="Category") + jtools::theme_apa()
+```
+
+## Entitativity
+
+```{r}
+ggplot(fullData, aes(Categ, Ent.Z)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Entitativity",x="Category") + jtools::theme_apa()
+```
+
+## Similarity Among Group Members
+
+```{r}
+ggplot(fullData, aes(Categ, Sim.Z)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Similarity",x="Category") + jtools::theme_apa()
+```
+
+## Self-Prototypicality of Group
+
+```{r}
+ggplot(fullData, aes(Categ, Proto.Z)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Self-Prototypicality",x="Category") + jtools::theme_apa()
+```
 
 # Identification as a Function of Identity-Relevant Experiences
 
 ## Salient identity-relevant events predict greater social identification
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(I ~ Salient.Z + ( Salient.Z | subID) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
+m<-brm(I ~ Salient.Z + ( Salient.Z | subID) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 
 ```
 
 ```{r, echo=FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 cond<- conditional_effects(m)
 
 ggplot(cond[[1]], aes(Salient.Z, estimate__)) + geom_smooth(method="lm") + geom_ribbon(aes(ymin=lower__, ymax=upper__), alpha=0.15) + xlab("Salience") + ylab("Identification")
@@ -174,12 +297,12 @@ ggplot(cond[[1]], aes(Salient.Z, estimate__)) + geom_smooth(method="lm") + geom_
 ## Positive Experiences Predict Greater Social Identification
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(I ~ GExp.Z + BExp.Z + ( GExp.Z + BExp.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
+m<-brm(I ~ GExp.Z + BExp.Z + ( GExp.Z + BExp.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
 
 ```{r, echo = FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 cond<- conditional_effects(m)
 
 ggplot(cond[[1]], aes(GExp.Z, estimate__)) + geom_smooth(method="lm") + geom_ribbon(aes(ymin=lower__, ymax=upper__), alpha=0.15) + xlab("Good Experiences") + ylab("Identification")
@@ -190,13 +313,13 @@ ggplot(cond[[2]], aes(BExp.Z, estimate__)) + geom_smooth(method="lm") + geom_rib
 ## Feeling Prototypical Predicts Social Identification
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(I ~ Proto.Z * Time.Z + ( Proto.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
+m<-brm(I ~ Proto.Z * Time.Z + ( Proto.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 
 ```
 
 ```{r, echo=FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 cond <- conditional_effects(m, effects = c("Proto.Z","Time.Z:Proto.Z"))
 
 ggplot(cond[[1]], aes(effect1__, estimate__)) +  geom_line(method="lm") + geom_ribbon(aes(ymin=lower__, ymax=upper__), alpha=0.15) + xlab("Prototypicality") + ylab("Identification") + jtools::theme_apa()
@@ -208,13 +331,12 @@ ggplot(cond[[2]], aes(effect1__, estimate__)) +  geom_line(aes(linetype=as.facto
 ## Feeling assimilated predicts greater identification
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(I ~ A.Z * Time.Z + ( A.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
-
+m<-brm(I ~ A.Z * Time.Z + ( A.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
 
 ```{r, echo = FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 cond <- conditional_effects(m, effects = c("A.Z","Time.Z:A.Z"))
 
 ggplot(cond[[1]], aes(effect1__, estimate__)) +  geom_line(method="lm") + geom_ribbon(aes(ymin=lower__, ymax=upper__), alpha=0.15) + xlab("Assimilation") + ylab("Identification") + jtools::theme_apa()
@@ -226,12 +348,12 @@ ggplot(cond[[2]], aes(effect1__, estimate__)) +  geom_line(aes(linetype=as.facto
 ## More Positive and Less Bad Experiences Predict Feeling Perceived as Belonging to Group By Others
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(BelPer ~ GExp.Z * BExp.Z + ( GExp.Z + BExp.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
+m<-brm(BelPer ~ GExp.Z * BExp.Z + ( GExp.Z + BExp.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
 
 ```{r, echo=FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 cond <- conditional_effects(m)
 conditional_effects(m)
 ```
@@ -239,13 +361,13 @@ conditional_effects(m)
 ## Perceiving group members as similar predicts more identification
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(I ~ Sim.Z * Time.Z + ( Sim.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
+m<-brm(I ~ Sim.Z * Time.Z + ( Sim.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
 
 ```{r, echo=FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-cond <- conditional_effects(m, effects = c("Sim","Time.Z:Sim.Z"))
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+cond <- conditional_effects(m, effects = c("Sim.Z","Time.Z:Sim.Z"))
 
 ggplot(cond[[1]], aes(effect1__, estimate__)) +  geom_line(method="lm") + geom_ribbon(aes(ymin=lower__, ymax=upper__), alpha=0.15) + xlab("Perceived Similarity") + ylab("Identification") + jtools::theme_apa()
 
@@ -256,22 +378,25 @@ ggplot(cond[[2]], aes(effect1__, estimate__)) +  geom_line(aes(linetype=as.facto
 ## Perceiving self as representative of group predicts more identification
 
 ```{r, echo=FALSE, warning=FALSE, include=FALSE}
-m<-brm(I ~ Proto.Z * Time.Z + ( Proto.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
+m<-brm(I ~ Proto.Z * Time.Z + ( Proto.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
 
 ```{r, echo=FALSE}
-sexit(m) %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-ggpredict(m, c("Time.Z","Proto.Z[1,4,7]")) %>% plot(show.title=F) + xlab("Time") + ylab("Identification") + jtools::theme_apa()
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical=FALSE)
 ```
 
 ## Stigma Perception Predicts Greater Membership Uncertainty
 
-```{r}
-m<-lmer(MemUnc.Z ~ St.Z * Time.Z + ( St.Z + Time.Z | subID ) + ( St.Z + Time.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 15)
-ggpredict(m, c("Time.Z","St.Z[1,4,7]")) %>% plot(show.title=F) + xlab("Time") + ylab("Positivity of Connected Identities") + jtools::theme_apa()
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(MemUnc ~ St.Z * Time.Z + ( St.Z + Time.Z | subID ) + ( St.Z + Time.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
+```{r, echo=FALSE}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 # Propagation
@@ -280,155 +405,260 @@ ggpredict(m, c("Time.Z","St.Z[1,4,7]")) %>% plot(show.title=F) + xlab("Time") + 
 
 As identity perceived more positively, it's neighboring connected identities are also perceived more positively
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(P_neigh ~ P.Z * Time.Z + ( P.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
 ```{r}
-m<-lmer(P_neigh ~ P * Time + ( P + Time | subID ) + (1 | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-ggpredict(m, c("Time","P[1,4,7]")) %>% plot(show.title=F) + xlab("Time") + ylab("Positivity of Connected Identities") + jtools::theme_apa()
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Spread of Uncertainty About What It Means to be Identity
 
 As people perceive more uncertainty about identity, it's neighboring connected identities are also perceived uncertainly.
 
-```{r}
-m<-lmer(IdUnc_neigh.Z ~ IdUnc.Z * Time.Z + ( IdUnc.Z | subID ) + ( Time.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-ggpredict(m, c("Time.Z","IdUnc.Z[-1.5,0,1.5]")) %>% plot(show.title=F) + xlab("Time") + ylab("Uncertainty About Neighboring Identities") + jtools::theme_apa()
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(IdUnc_neigh.Z ~ IdUnc.Z * Time.Z + ( IdUnc.Z | subID ) + ( Time.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
+```{.r-stack}
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Spread of Self-Prototypicality
 
 As people perceive themselves as more prototypical of a group, they also perceive themselves as more prototypical of connected groups
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(Proto_neigh.Z ~ Proto.Z * Time.Z + ( Proto.Z | subID ) + ( Time.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
 ```{r}
-m<-lmer(Proto_neigh.Z ~ Proto.Z * Time.Z + ( Proto.Z | subID ) + ( Time.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-ggpredict(m, c("Time.Z","Proto.Z[-1.5,0,1.5]")) %>% plot(show.title=F) + xlab("Time") + ylab("Self-Prototypicality of Neighboring Identities") + jtools::theme_apa()
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Spread of Group Similarity
 
 As people perceive group members as more similar to one another, they also perceive members of connected groups as more similar to one another.
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(Sim_neigh.Z ~ Sim.Z * Time.Z + ( Sim.Z | subID ) + ( Time.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
 ```{r}
-m<-lmer(Sim_neigh.Z ~ Sim.Z * Time.Z + ( Sim.Z | subID ) + ( Time.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-ggpredict(m, c("Time.Z","Sim.Z[-1.5,0,1.5]")) %>% plot(show.title=F) + xlab("Time") + ylab("Self-Prototypicality of Neighboring Identities") + jtools::theme_apa()
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Spread of Identity-Obligation on Connected Identification
 
 Main effect of feeling like you are obligated to behave like your identity on connected identities
 
-```{r}
-m<-lmer(I_neigh.Z ~ Should.Z * Time.Z + ( Should.Z | subID ) + ( Time.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(I_neigh.Z ~ Should.Z * Time.Z + ( Should.Z | subID ) + ( Time.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
 ```
 
-# Degree Centrality and Identity Strength
+```{r}
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+# Degree Centrality
+
+------------------------------------------------------------------------
 
 ## Intergroup Bias
 
 ***Number of connections weakly predicts bias***
 
-```{r}
-m<-lmer(bias.Z ~  degree.Z * Time.Z + numID + ( degree.Z | subID ) + ( numID | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(bias.Z ~  degree.Z * Time.Z + numID + ( degree.Z | subID ) + ( numID | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
 ```
+
+```{r}
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+------------------------------------------------------------------------
 
 ***Strength of connections does not predict bias***
 
-```{r}
-m<-lmer(bias.Z ~  strength.Z + Time.Z + numID + ( strength.Z | subID ) + ( numID | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(bias.Z ~  strength.Z * Time.Z + numID + ( strength.Z | subID ) + ( numID | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
 ```
+
+```{r}
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+------------------------------------------------------------------------
 
 ***Modeling both simultaneously, number of connections weakly predicts bias***
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(bias.Z ~  strength.Z + degree.Z + Time.Z + numID + ( strength.Z | subID ) + ( numID | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
+```
+
 ```{r}
-m<-lmer(bias.Z ~  strength.Z + degree.Z + Time.Z + numID + ( strength.Z | subID ) + ( numID | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Strength of identification
 
 ***Number of connections does not predict strength of identification***
 
-```{r}
-m<-lmer(I.Z ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(I ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
+
+```{r}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+------------------------------------------------------------------------
 
 ***But strength of connections [does]{.underline} predict strength of identification***
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(I ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
 ```{r}
-m<-lmer(I.Z ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Ability to leave group membership (i.e., mutability)
 
 ***Number of connections marginally negatively predicts mutability***
 
-```{r}
-m<-lmer(M.Z ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(M ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
+
+```{r}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+------------------------------------------------------------------------
 
 ***Strength of connections more strongly negatively predicts mutability***
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(M ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
 ```{r}
-m<-lmer(M.Z ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Positivity of group
 
 ***Number of connections [don't]{.underline} predict positivity***
 
-```{r}
-m<-lmer(P.Z ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(P ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
+
+```{r}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+------------------------------------------------------------------------
 
 ***Strength of connections [do]{.underline} more strongly negatively predicts positivity***
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(P ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
 ```{r}
-m<-lmer(P.Z ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 ## Self-prototypicality
 
 ***Number of connections [don't]{.underline} predict self-prototypicality***
 
-```{r}
-m<-lmer(Proto.Z ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(Proto ~ degree.Z + ( degree.Z | subID ) + ( degree.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 ```
+
+```{r}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+------------------------------------------------------------------------
 
 ***Strength of connections [do]{.underline} more strongly predicts self-prototypicality***
 
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(Proto ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
 ```{r}
-m<-lmer(Proto.Z ~ strength.Z + ( strength.Z | subID ) + ( strength.Z | identity), data=fullData)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+## Salience as a function of identity relations
+
+***Inwards connections*** ***predict salience***
+
+Outdegree and degree do not...
+
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(Salient ~ outdegree.Z + (outdegree.Z | subID) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
+```{r}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
+```
+
+## Membership uncertainty as a function of identity relations
+
+***Outwards connections predict membership uncertainty***
+
+Indegree and degree do not...
+
+```{r, echo=FALSE, warning=FALSE, include=FALSE}
+m<-brm(Salient ~ outdegree.Z + (outdegree.Z | subID) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
+```
+
+```{r}
+sexit(m) %>% as_tibble %>% mutate(OR = exp(Median)) %>% kbl() %>%
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
+conditional_effects(m, categorical = F)
 ```
 
 # Individual Differences
@@ -440,9 +670,9 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ### Need for Cognition
 
 ```{r}
-m<-lmer(bias.Z ~ strength.Z * Time.Z + ( strength.Z | subID ) + ( 1 | identity), data=fullData)
+m<-lmer(bias.Z ~ NFC.Z * Time.Z + ( Time.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -452,7 +682,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ Time.Z * SCC.Z + ( Time.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -462,7 +692,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ Time.Z * SE.Z + ( Time.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ## Individual Differences in Changes in Identification
@@ -474,7 +704,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ Time.Z * NFC.Z + ( Time.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -484,7 +714,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ Time.Z * SCC.Z + ( Time.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -494,7 +724,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ Time.Z * SE.Z + ( Time.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ## Individual Differences in Changes in Mutability
@@ -506,7 +736,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(M.Z ~ Time.Z * NFC.Z + ( Time.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -516,7 +746,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(M.Z ~ Time.Z * SCC.Z + ( Time.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -526,7 +756,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(M.Z ~ Time.Z * SE.Z + ( Time.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ## Individual Differences in the Effect of Obligation on Identification
@@ -538,7 +768,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ Should.Z * NFC.Z + ( Should.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("NFC.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Need for Cognition") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -551,7 +781,7 @@ At lower levels of self-concept clarity, feeling like you should behave like you
 ```{r}
 m<-lmer(I.Z ~ Should.Z * SCC.Z + ( Should.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("SCC.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Concept Clarity") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -562,7 +792,7 @@ ggpredict(m, c("SCC.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-
 ```{r}
 m<-lmer(I.Z ~ Should.Z * SE.Z + ( Should.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("SE.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Esteem") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -575,7 +805,7 @@ ggpredict(m, c("SE.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-E
 ```{r}
 m<-lmer(I.Z ~ Salient.Z * NFC.Z + ( Salient.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("NFC.Z","Salient.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Need for Cognition") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -586,7 +816,7 @@ ggpredict(m, c("NFC.Z","Salient.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Need
 ```{r}
 m<-lmer(I.Z ~ Salient.Z * SCC.Z + ( Salient.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("SCC.Z","Salient.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Concept Clarity") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -597,7 +827,7 @@ ggpredict(m, c("SCC.Z","Salient.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self
 ```{r}
 m<-lmer(I.Z ~ Salient.Z * SE.Z + ( Salient.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("SE.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Esteem") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -610,7 +840,7 @@ ggpredict(m, c("SE.Z","Should.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-E
 ```{r}
 m<-lmer(I.Z ~ St.Z * NFC.Z + ( St.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("NFC.Z","St.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Need for Cognition") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -621,7 +851,7 @@ ggpredict(m, c("NFC.Z","St.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Need for 
 ```{r}
 m<-lmer(I.Z ~ St.Z * SCC.Z + ( St.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("SCC.Z","St.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Concept Clarity") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -632,7 +862,7 @@ ggpredict(m, c("SCC.Z","St.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Conc
 ```{r}
 m<-lmer(I.Z ~ St.Z * SE.Z + ( St.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("SE.Z","St.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Esteem") + ylab("Identification") + jtools::theme_apa()
 ```
 
@@ -645,7 +875,7 @@ ggpredict(m, c("SE.Z","St.Z[-1,0,1]")) %>% plot(show.title=F) + xlab("Self-Estee
 ```{r}
 m<-lmer(I.Z ~ GExp.Z * NFC.Z + BExp.Z * NFC.Z + ( BExp.Z + GExp.Z | subID ) + ( NFC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -655,7 +885,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ GExp.Z * SCC.Z + BExp.Z * SCC.Z + ( BExp.Z + GExp.Z | subID ) + ( SCC.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -665,7 +895,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 ```{r}
 m<-lmer(I.Z ~ GExp.Z * SE.Z + BExp.Z * SE.Z + ( BExp.Z + GExp.Z | subID ) + ( SE.Z | identity), data=fullData)
 tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
-  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+  kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ## Individual Differences in Identity Strength
@@ -678,7 +908,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%
 m <- lmer(sumStre.Z~NFC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -689,7 +919,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- lmer(sumStre.Z~SE.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -700,7 +930,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- lmer(sumStre.Z~SCC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ## Individual Differences in Number of Identities
@@ -713,7 +943,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- glmer(numID~NFC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort, family="poisson")
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -724,7 +954,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- glmer(numID~SE.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort, family="poisson")
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -735,7 +965,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- glmer(numID~SCC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort, family="poisson")
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ## Individual Differences in Network Density
@@ -748,7 +978,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- lmer(dense.Z~NFC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -759,7 +989,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- lmer(dense.Z~SE.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -772,7 +1002,7 @@ Higher self-concept clarity predicts less density across time and lower self-con
 m <- lmer(dense.Z~SCC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("Time.Z","SCC.Z")) %>% plot(show.title=F) + xlab("Time") + ylab("Identity Network Density") + jtools::theme_apa()
 ```
 
@@ -786,7 +1016,7 @@ ggpredict(m, c("Time.Z","SCC.Z")) %>% plot(show.title=F) + xlab("Time") + ylab("
 m <- lmer(dense.Z~NFC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -797,7 +1027,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- lmer(dense.Z~SE.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ```
 
 ------------------------------------------------------------------------
@@ -808,7 +1038,7 @@ tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_
 m <- lmer(dense.Z~SCC.Z * Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("Time.Z","SCC.Z")) %>% plot(show.title=F) + xlab("Time") + ylab("Identity Network Density") + jtools::theme_apa()
 ```
 
@@ -822,7 +1052,7 @@ ggpredict(m, c("Time.Z","SCC.Z")) %>% plot(show.title=F) + xlab("Time") + ylab("
 m <- lmer(idSimGlob.Z~totalBias.Z * Time.Z + varBias.Z + 
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 ggpredict(m, c("Time.Z","totalBias.Z")) %>% plot(show.title=F) + xlab("Time") + ylab("Intergroup Bias") + jtools::theme_apa()
 ```
 
@@ -834,7 +1064,7 @@ ggpredict(m, c("Time.Z","totalBias.Z")) %>% plot(show.title=F) + xlab("Time") + 
 m <- lmer(meanStre.Z~totalBias.Z + Time.Z + varBias.Z + numID +
                  + ( Time.Z |subID),
                  data=fullShort)
-tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 25)
+tidy(m,conf.int=TRUE,effects="fixed") %>% kbl() %>%   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 
 ```
 

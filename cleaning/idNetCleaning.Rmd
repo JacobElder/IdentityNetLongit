@@ -56,6 +56,9 @@ colnames(T1raw)[wrong:(wrong+14)] <- paste0("I8_Sims_",1:15)
 noms <- which(colnames(T1raw)=="Identity Nominations_1")[1]
 colnames(T1raw)[noms:(noms+14)] <- paste0("IdNoms_",1:15)
 
+T1raw <- rename(T1raw,"I6_Pol_Type"="I#_Pol_Type")
+T1raw <- rename(T1raw, "I6_Pol_Type_7_TEXT"="I#_Pol_Type_7_TEXT")
+
 T1raw <- as_tibble(T1raw)
 T2raw <- as_tibble(T2raw)
 T3raw <- as_tibble(T3raw)
@@ -263,7 +266,7 @@ for(i in 1:4){
     subLong <- 
       cbind(subID,
           as_vector(idMat[idMat$subID==subID,2:(numIdentities+1)]),
-          1:length(numIdentities),
+          seq(1,numIdentities),
           i,
           degree(subNetUW),
           degree(subNetUW,mode="out"),
@@ -316,7 +319,10 @@ for(i in 1:4){
     unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "BExp", "all"))),
     unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "GExp", "all"))),
     unlist(lapply(1:numIdentities, function(x) computeNeighbors(subNetUW, x, "BelPer", "all")))
+    
     )
+    
+    
     
     # identity to identity network total edges
     idEdgT <- ecount(subNetUW)
@@ -366,6 +372,261 @@ begNames <- c("subID","Time","edgeTot","dense","aveDist","idTrans","globEff","nu
 colnames(fullShort)[1:length(begNames)] <- begNames
 fullShort <- as.data.frame(fullShort)
 ```
+
+```{r}
+
+T1raw <- T1raw %>% mutate(across(contains("Race_Type"), ~ case_when(.==1 ~ "Black/African-American", 
+                                                     .==2 ~ "Hispanic/Latino",
+                                                     .==3 ~ "White/Causasian",
+                                                     .==4 ~ "Asian",
+                                                     .==5 ~ "Pacific Islander",
+                                                     .==6 ~ "Native-American",
+                                                     .==7 ~ "Indian/South Asian",
+                                                     .==8 ~ "Mixed",
+                                                     .==9 ~ "Middle-Eastern",
+                                                     .==10 ~ "Other"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("Gen_Type"), ~ case_when(.==1 ~ "Cisgender Male", 
+                                                     .==2 ~ "Cisgender Female",
+                                                     .==3 ~ "White/Causasian",
+                                                     .==4 ~ "Nonbinary",
+                                                     .==5 ~ "Transgender Male",
+                                                     .==6 ~ "Transgender Female",
+                                                     .==7 ~ "Other"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("Sex_Type"), ~ case_when(.==1 ~ "Heterosexual", 
+                                                     .==2 ~ "Homosexual",
+                                                     .==3 ~ "Bisexual",
+                                                     .==4 ~ "Asexual",
+                                                     .==5 ~ "Pacific Islander",
+                                                     .==6 ~ "Pansexual",
+                                                     .==7 ~ "Queer",
+                                                     .==8 ~ "Other"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("Rel_Type"), ~ case_when(.==1 ~ "Catholic", 
+                                                     .==2 ~ "Christian",
+                                                     .==3 ~ "Islamic",
+                                                     .==4 ~ "Hindu",
+                                                     .==5 ~ "Buddhist",
+                                                     .==6 ~ "Jewish",
+                                                     .==7 ~ "Sikh",
+                                                     .==8 ~ "Atheist",
+                                                     .==9 ~ "Agnostic",
+                                                     .==10 ~ "Other"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("SES_Type"), ~ case_when(.==1 ~ "Upper Class", 
+                                                     .==2 ~ "Upper Middle Class",
+                                                     .==3 ~ "Middle Class",
+                                                     .==4 ~ "Lower Middle Class",
+                                                     .==5 ~ "Working Class",
+                                                     .==6 ~ "Poor",
+                                                     .==7 ~ "Other"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("Occup_Type"), ~ case_when(.==1 ~ "Student", 
+                                                     .==2 ~ "Agriculture/Food/Farming",
+                                                     .==3 ~ "Architecture/Construction",
+                                                     .==4 ~ "Business/Management/Administration",
+                                                     .==5 ~ "Arts/Audio/Video Tech/Communications",
+                                                     .==6 ~ "Finance",
+                                                     .==7 ~ "Government and Public Administration",
+                                                     .==8 ~ "Health/Medicine",
+                                                     .==9 ~ "Hospitality/Tourism",
+                                                     .==10 ~ "Entertainment",
+                                                     .==11 ~ "Marketing/Sales/Service", 
+                                                     .==12 ~ "Information Technology",
+                                                     .==13 ~ "Law/Public Safety/Corrections/Security",
+                                                     .==14 ~ "Manufacturing",
+                                                     .==15 ~ "Marketing/Sales/Service",
+                                                     .==16 ~ "Private Sector Science/Technology",
+                                                     .==17 ~ "Academic Science/Technology",
+                                                     .==18 ~ "Transportation/Distribution/Logistics",
+                                                     .==19 ~ "Unemployed",
+                                                     .==20 ~ "Other/Not Listed"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("Pol_Type"), ~ case_when(.==1 ~ "Democrat", 
+                                                     .==2 ~ "Republican",
+                                                     .==3 ~ "Libertarian",
+                                                     .==4 ~ "Green",
+                                                     .==5 ~ "Socialist",
+                                                     .==6 ~ "Independent",
+                                                     .==7 ~ "Other/Not Listed"
+                                                     )))
+
+
+T1raw <- T1raw %>% mutate(across(contains("Fam_Type"), ~ case_when(.==1 ~ "Mother", 
+                                                     .==2 ~ "Father",
+                                                     .==3 ~ "Son",
+                                                     .==4 ~ "Daughter",
+                                                     .==5 ~ "Sister",
+                                                     .==6 ~ "Brother",
+                                                     .==7 ~ "Uncle",
+                                                     .==8 ~ "Aunt",
+                                                     .==9 ~ "Grandfather",
+                                                     .==10 ~ "Granddaughter",
+                                                     .==11 ~ "Nephew", 
+                                                     .==12 ~ "Niece",
+                                                     .==13 ~ "Other",
+                                                     .==14 ~ "Grandmother",
+                                                     .==15 ~ "Grandson"
+                                                     )))
+
+
+T1raw <- T1raw %>% mutate(across(contains("Friend_Type"), ~ case_when(.==1 ~ "Best Friend", 
+                                                     .==2 ~ "Friend",
+                                                     .==3 ~ "Acquaintance",
+                                                     .==4 ~ "Other"
+                                                     )))
+
+T1raw <- T1raw %>% mutate(across(contains("Hob_Type"), ~ case_when(.==1 ~ "Art/Craft", 
+                                                     .==2 ~ "Music",
+                                                     .==3 ~ "Sports",
+                                                     .==4 ~ "Gardening",
+                                                     .==5 ~ "Cooking/Baking",
+                                                     .==6 ~ "Outdoors",
+                                                     .==7 ~ "Dancing",
+                                                     .==8 ~ "Gaming",
+                                                     .==9 ~ "Movies/TV",
+                                                     .==10 ~ "Social",
+                                                     .==11 ~ "Travel/Exploration", 
+                                                     .==12 ~ "Driving",
+                                                     .==13 ~ "Collection",
+                                                     .==14 ~ "Reading",
+                                                     .==15 ~ "Brewing",
+                                                     .==16 ~ "Manufacturing/Building",
+                                                     .==17 ~ "Running",
+                                                     .==18 ~ "Weightlifting",
+                                                     .==19 ~ "Other/Not Listed"
+                                                     )))
+
+
+```
+
+
+```{r}
+
+  raw <- get(paste0("T","1","raw"))
+  uIds <- unique(raw$subID)
+  
+  fullMat <- matrix(ncol=4,nrow=0)
+  
+for(j in 1:length(uIds)){
+  
+  subID <- uIds[j]
+  numIdentities <- sum(!is.na(idMat[idMat$subID==subID,2:16]))
+ 
+    CatsCols <- as.numeric(raw[raw$subID==subID, paste0("I",1:numIdentities,"_Cat")])
+    CategV <- matrix(ncol=1,nrow=numIdentities)
+    GroupV <- matrix(ncol=1,nrow=numIdentities)
+    TypeV <- matrix(ncol=1,nrow=numIdentities)
+    
+    for(z in 1:numIdentities){
+      
+      if(!is.na(CatsCols[z])){
+        
+      if(CatsCols[z]==1){
+        C <- "Race"
+        
+      }else if(CatsCols[z]==2){
+        C <- "Gen"
+         
+      }else if(CatsCols[z]==3){
+        C <- "Sex"
+         
+      }else if(CatsCols[z]==4){
+        C <- "Pol"
+         
+      }else if(CatsCols[z]==5){
+        C <- "SES"
+         
+      }else if(CatsCols[z]==6){
+        C <- "Rel"
+         
+      }else if(CatsCols[z]==7){
+        C <- "Occup"
+         
+      }else if(CatsCols[z]==8){
+        C <- "Hob"
+         
+      }else if(CatsCols[z]==9){
+        C <- "Fam"
+         
+      }else if(CatsCols[z]==10){
+        C <- "Friend"
+         
+      }else if(CatsCols[z]==11){
+        C <- "Other"
+      }
+        
+      }else{
+        C <- NA
+      }
+        
+    if(!is.na(CatsCols[z])){
+      
+      if(CatsCols[z]==11){
+      #Group <- as.numeric(raw[raw$subID==subID, paste0("I",z,"_Cat_11_TEXT")])
+        Type <- as.character(raw[raw$subID==subID, paste0("I",z,"_Cat_11_TEXT")])
+        
+        # if(is.na(Type)){
+        #   break
+        # }
+        
+      }else if (CatsCols[z]<11){
+      #Group <- T1raw[paste0("I",z,"_",C)]
+        Type <- as.character(raw[raw$subID==subID, paste0("I",z,"_",C,"_Type")]) 
+        
+        # if(is.na(Type)){
+        #   break
+        # }
+        
+      }
+      
+    }else{
+      
+      Type <- NA
+      
+    }  
+   
+    CategV[z,1] <- C
+    #GroupV[z,1] <- Group
+    TypeV[z,1] <- Type
+      
+    }
+    
+
+    subMat <- cbind(subID=rep(subID,numIdentities), seq(1,numIdentities),  CategV, TypeV)
+    fullMat <- rbind(fullMat,subMat)
+  
+}
+  
+identityDf <-  as.data.frame(fullMat)
+colnames(identityDf) <- c("subID","idCode","Categ","Group")
+fullLong <- merge(fullLong, identityDf, by=c("subID","idCode"))
+fullLong <- fullLong %>% select(subID, idCode, identity, Categ, Group, everything())
+```
+
+```{r}
+T1raw <- T1raw %>% mutate(across(ends_with("_Cat"), ~ case_when(.==1 ~ "Racial/Ethnic", 
+                                                     .==2 ~ "Gender",
+                                                     .==3 ~ "Sexual Orientation",
+                                                     .==4 ~ "Political",
+                                                     .==5 ~ "Socioeconomic",
+                                                     .==6 ~ "Religion",
+                                                     .==7 ~ "Occupation",
+                                                     .==8 ~ "Hobby/Ability",
+                                                     .==9 ~ "Family",
+                                                     .==10 ~ "Friend",
+                                                     .==11 ~ "Other"
+                                                     )))
+```
+
+
 
 # Remove duplicate rows
 

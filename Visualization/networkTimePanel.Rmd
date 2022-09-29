@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(groundhog)
+pkgs <-  c("tidyverse","here", "igraph", "ggplot2", "GGally")
+groundhog.day <- '2022-07-25'
+groundhog.library(pkgs, groundhog.day)
+here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
+```
+
+
+```{r}
+fullLong <- read.csv(here("Data/longIdentityNet.csv"))
+fullShort <- read.csv(here("Data/shortIdentityNet.csv"))
+fullData <- fullLong %>% full_join(fullShort, by = c("subID","Time"))
+
+allTimesIDs <- unique(fullData$subID[which(fullData$Time==4)])
+allTimes <- fullData[fullData$subID %in% allTimesIDs,]
+tapply(allTimes$identity, allTimes$subID, function(x) length(unique(x)))
+
+sub <- 57241
+```
+
+
+```{r}
+mat<-as.matrix(as_adj(subIGraph.57241_1))
+subGraph<-graph.adjacency(mat)
+
+set.seed(2)
+
+plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
+  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(subGraph)$Names), size = 3.5)
+plotOutdegree
+```
+
+```{r}
+for(i in 1:4){
+  subGraph<-get(paste0("subIGraphW.57241_",i))
+  set.seed(2)
+  plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "degree", color = "phono", edge.color = "grey", mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
+  guides(color = FALSE, size = FALSE)
+  assign(paste0('p',i), plotOutdegree)
+}
+
+ggpubr::ggarrange(p1,p2,p3,p4,nrow=2,ncol=2,labels=c("T1","T2","T3","T4"))
+
+ggsave("~/Desktop/panel.png", dpi=300, width=6, height=6)
+```
+
+```{r}
+mat<-as.matrix(as_adj(subIGraph.57241_1))
+subGraph<-graph.adjacency(mat)
+
+set.seed(2)
+
+library(GGally)
+plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
+  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(subGraph)$Names), size = 3.5)
+plotOutdegree
+```
+
+```{r}
+mat<-as.matrix(as_adj(subIGraph.57241_4))
+subGraph<-graph.adjacency(mat)
+
+set.seed(2)
+
+library(GGally)
+plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
+  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(subGraph)$Names), size = 3.5)
+plotOutdegree
+```
+
+

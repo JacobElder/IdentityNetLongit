@@ -7,7 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(groundhog)
-pkgs <-  c("tidyverse","here", "igraph","lmerTest", "ggeffects")
+pkgs <-  c("tidyverse","here", "igraph","lmerTest", "ggeffects","ggdist")
 groundhog.day <- '2022-07-25'
 groundhog.library(pkgs, groundhog.day)
 here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
@@ -20,26 +20,43 @@ fullData <- fullLong %>% full_join(fullShort, by = c("subID","Time"))
 ```
 
 ```{r}
-fullData$I.Z <- scale(fullData$I)
-fullData$Salient.Z <- scale(fullData$Salient)
-fullData$Should.Z <- scale(fullData$Should)
-fullData$Time.Z <- scale(fullData$Time)
-fullData$GExp.Z <- scale(fullData$GExp)
-fullData$BExp.Z <- scale(fullData$BExp)
-fullData$degree.Z <- scale(fullData$degree)
-fullData$strength.Z <- scale(fullData$strength)
-fullData$sumStre.Z <- scale(fullData$sumStre)
-fullData$meanStre.Z <- scale(fullData$meanStre)
-fullData$Proto.Z <- scale(fullData$Proto)
-fullData$Sim.Z <- scale(fullData$Sim)
-fullData$P.Z <- scale(fullData$P)
-fullData$M.Z <- scale(fullData$M)
-fullData$St.Z <- scale(fullData$St)
+# fullData$I.Z <- scale(fullData$I)
+# fullData$Salient.Z <- scale(fullData$Salient)
+# fullData$Should.Z <- scale(fullData$Should)
+# fullData$Time.Z <- scale(fullData$Time)
+# fullData$GExp.Z <- scale(fullData$GExp)
+# fullData$BExp.Z <- scale(fullData$BExp)
+# fullData$degree.Z <- scale(fullData$degree)
+# fullData$strength.Z <- scale(fullData$strength)
+# fullData$sumStre.Z <- scale(fullData$sumStre)
+# fullData$meanStre.Z <- scale(fullData$meanStre)
+# fullData$Proto.Z <- scale(fullData$Proto)
+# fullData$Sim.Z <- scale(fullData$Sim)
+# fullData$P.Z <- scale(fullData$P)
+# fullData$M.Z <- scale(fullData$M)
+# fullData$St.Z <- scale(fullData$St)
 
-scaled <- apply(fullData[4:ncol(fullData)], 2, function(x) scale(x))
+scaled <- apply(fullData[6:ncol(fullData)], 2, function(x) scale(x))
 colnames(scaled) <- paste0(colnames(scaled),".Z")
 fullData <- cbind(fullData, scaled)
+
+# Any duplicate column names?
+colnames(fullData)[which(duplicated(colnames(fullData)))]
 ```
+
+```{r}
+degree <- Rmisc::summarySE(data=fullData,measurevar = "degree",groupvars = "Categ")
+
+ggplot(fullData, aes(Categ, indegree)) + 
+  ggdist::stat_halfeye(adjust = .5, width = .7, .width = 0, justification = -.2, point_colour = NA) +
+  geom_boxplot(width = .2, outlier.shape = NA) + 
+  geom_jitter(width = .05, alpha = .3) + labs(y="Degree",x="University") + jtools::theme_apa()
+
+m<-lmer(degree ~ Categ + ( Categ | subID ) + (1 | identity), data=fullData)
+summary(m)
+ggpredict(m, c("Categ")) %>% plot()
+```
+
 
 
 # Pre-Registered
