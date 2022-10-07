@@ -232,6 +232,12 @@ ggplot(fullData, aes(Categ, I.Z)) +
   geom_jitter(width = .05, alpha = .3) + labs(y="Identification",x="Category") + jtools::theme_apa()
 ```
 
+```{r}
+m<-lmer(I.Z ~  Categ * Should.Z + ( Categ + Should.Z | subID ) + ( 1 | identity), data=fullData)
+summary(m)
+ggpredict(m, c("Categ","Should.Z")) %>% plot()
+```
+
 ## Mutability
 
 ```{r}
@@ -423,7 +429,7 @@ As people perceive more uncertainty about identity, it's neighboring connected i
 m<-brm(IdUnc_neigh.Z ~ IdUnc.Z * Time.Z + ( IdUnc.Z | subID ) + ( Time.Z | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0)
 ```
 
-```{.r-stack}
+``` r-stack
 sexit(m) %>% as_tibble %>% kbl() %>%
   kable_paper("hover", full_width = T, fixed_thead = T, font_size = 10)
 conditional_effects(m, categorical = F)
