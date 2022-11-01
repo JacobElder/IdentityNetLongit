@@ -1,0 +1,170 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r global options}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r, include=F}
+library(groundhog)
+pkgs <-  c("corrr","tidyverse","ggplot2","lme4","lmerTest", "ggeffects", "sjPlot", "insight", "data.table", "here", "arrow", "jtools", "r2glmm")
+groundhog.day <- '2022-07-25'
+groundhog.library(pkgs, groundhog.day)
+here::i_am("main/Analysis/supplemental_analyses.qmd")
+```
+
+```{r, include=F}
+#study 1
+longDf1 <- read_parquet(here("main","data","PFfullDf.parquet"))
+
+longDf1$partyN <- as.factor(longDf1$partyN)
+longDf1$Rep <- as.factor(longDf1$Rep)
+contrasts(longDf1$Rep) <- contr.sum(3)
+longDf1$RepN <- as.factor(longDf1$RepN)
+longDf1$RepN <- relevel(longDf1$RepN,"In")
+longDf1$Info <- as.factor(longDf1$Info)
+contrasts(longDf1$Info) <- contr.sum(2)
+longDf1$partyN <- as.factor(longDf1$partyN)
+contrasts(longDf1$partyN) <- contr.sum(2)
+demDf <- subset(longDf1, partyN == "Dem")
+repDf <- subset(longDf1, partyN == "Rep")
+longDf1$politStre <- as.factor(abs(4-longDf1$Polit))
+InfoDf1 <- subset(longDf1, Info == "Info")
+issueDf1 <- longDf1[!duplicated(longDf1$issues),]
+distDf1$polStrength <- as.factor(abs(4-distDf1$Polit))
+longDf1$inDev <- abs(longDf1$eval - longDf1$bootEvalIn)
+longDf1$outDev <- abs(longDf1$eval - longDf1$bootEvalOut)
+
+#study 2
+longDf2 <- read_parquet(here("main","data","PFfullDf2.parquet"))
+
+longDf2$partyN <- as.factor(longDf2$partyN)
+longDf2$Rep <- as.factor(longDf2$Rep)
+longDf2$Rep <- factor(longDf2$Rep, c("Non","Rep","Dem"))
+longDf2$Rep <- relevel(longDf2$Rep,"Non")
+contrasts(longDf2$Rep) <- contr.sum(3)
+longDf2$RepN <- as.factor(longDf2$RepN)
+longDf2$RepN <- relevel(longDf2$RepN,"In")
+longDf2$Info <- as.factor(longDf2$Info)
+contrasts(longDf2$Info) <- contr.sum(2)
+longDf2$partyN <- as.factor(longDf2$partyN)
+contrasts(longDf2$partyN) <- contr.sum(2)
+demDf <- subset(longDf2, partyN == "Dem")
+repDf <- subset(longDf2, partyN == "Rep")
+longDf2$politStre <- as.factor(abs(4-longDf2$Polit))
+InfoDf2 <- subset(longDf2, Info == "Info")
+issueDf2 <- longDf2[!duplicated(longDf2$issues),]
+longDf2$inDev <- abs(longDf2$eval - longDf2$bootEvalIn)
+longDf2$outDev <- abs(longDf2$eval - longDf2$bootEvalOut)
+
+indDiffs1 <- longDf1[match(unique(longDf1$subID), longDf1$subID),]
+indDiffs2 <- longDf2[match(unique(longDf2$subID), longDf2$subID),]
+
+indDiffs1$inTherm <- indDiffs1$inTherm/100
+indDiffs1$outTherm <- indDiffs1$outTherm/100
+indDiffs2$inTherm <- indDiffs2$inTherm/100
+indDiffs2$outTherm <- indDiffs2$outTherm/100
+```
+
+```{r}
+OLS.in.m.1 <- lm(inTherm ~ partyN, data = indDiffs1)
+summary(OLS.in.m.1)
+```
+
+```{r}
+OLS.in.m.2 <- lm(inTherm ~ partyN, data = indDiffs2)
+summary(OLS.in.m.2)
+```
+
+```{r}
+OLS.out.m.1 <- lm(outTherm ~ partyN, data = indDiffs1)
+summary(OLS.out.m.1)
+```
+
+```{r}
+OLS.out.m.2 <- lm(outTherm ~ partyN, data = indDiffs2)
+summary(OLS.out.m.2)
+library(performance)
+check_model(OLS.out.m.2)
+```
+
+
+```{r}
+fit2 <- brm(
+  inTherm ~ partyN,
+  data = indDiffs1,
+  cores = 4,
+  family = binomial()
+)
+summary(fit2)
+pp_check(fit2)
+residuals(fit2)
+```
+
+```{r}
+fit_q <- glm(inTherm ~ NFC, family = quasibinomial, data = indDiffs1)
+check_model(fit_q)
+
+fit2 <- brm(
+  inTherm ~ partyN,
+  data = indDiffs1,
+  cores = 4
+)
+summary(fit2)
+pp_check(fit2)
+residuals(fit2)
+```
+
+```{r}
+indDiffs1 %>%
+  as_tibble() %>%
+  add_residual_draws(fit2) %>%
+  median_qi() %>%
+  ggplot(aes(sample = .residual)) +
+  geom_qq() +
+  geom_qq_line()
+```
+
+```{r}
+indDiffs1 %>%
+  as_tibble() %>%
+  add_residual_draws(fit) %>%
+  median_qi() %>%
+  ggplot(aes(sample = .residual)) +
+  geom_qq() +
+  geom_qq_line()
+```
+
+
+
+
+```{r}
+library(brms)
+zoib_model <- bf(
+  inTherm ~ NFC,
+  phi ~ NFC,
+  zoi ~ NFC,
+  coi ~ NFC, 
+  family = zero_one_inflated_beta()
+)
+
+fit <- brm(
+  formula = zoib_model,
+  data = indDiffs1,
+  cores = 4,
+  file = "brm-zoib"
+)
+summary(fit)
+pp_check(fit)
+```
+
+
+```{r}
+library(patchwork)
+( qplot(indDiffs1$inTherm, bins=40) + qplot(indDiffs2$inTherm, bins=40) ) / ( qplot(indDiffs1$outTherm, bins=40) + qplot(indDiffs2$outTherm, bins=40) )
+```
+
+
+
