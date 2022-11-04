@@ -22,6 +22,8 @@ allTimes <- fullData[fullData$subID %in% allTimesIDs,]
 tapply(allTimes$identity, allTimes$subID, function(x) length(unique(x)))
 
 sub <- 57241
+
+load("/Volumes/Research Project/Longitudinal Identity Network/Data/cleanedWorkspace.RData")
 ```
 
 

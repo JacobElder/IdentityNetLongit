@@ -48,16 +48,13 @@ is.emptyString <- function(input){
 # Fixed duplicated names
 
 ```{r}
-# Duplicate columns
-wrong <- which(colnames(T1raw)=="I9_Sims_1")[1]
-colnames(T1raw)[wrong:(wrong+14)] <- paste0("I8_Sims_",1:15)
+# # Duplicate columns
+# wrong <- which(colnames(T1raw)=="I9_Sims_1")[1]
+# colnames(T1raw)[wrong:(wrong+14)] <- paste0("I8_Sims_",1:15)
 
 # Fix the identity nominations columns
 noms <- which(colnames(T1raw)=="Identity Nominations_1")[1]
 colnames(T1raw)[noms:(noms+14)] <- paste0("IdNoms_",1:15)
-
-T1raw <- rename(T1raw,"I6_Pol_Type"="I#_Pol_Type")
-T1raw <- rename(T1raw, "I6_Pol_Type_7_TEXT"="I#_Pol_Type_7_TEXT")
 
 T1raw <- as_tibble(T1raw)
 T2raw <- as_tibble(T2raw)
@@ -153,10 +150,29 @@ for(k in 1:4){
       
       # which column index are select identities
       ######rowSub <-which(idNames %in% selectWord[[1]])
-      # populate 1s for select identities in row
+      # populate 1s for select identities in row and column for undirected
+      # DO BELOW ONLY IF YOU WANT DIRECTED NETWORK
       subMat[c,as.numeric(unlist(selectWord))] <- 1 # Unweighted matrix
+      # ALSO DO BELOW IF YOU WANT UNDIRECTED (SYMMETRIC) NETWORK
+      subMat[as.numeric(unlist(selectWord)),c] <- 1 # Unweighted matrix
       diag(subMat) <- 0 # Set diagonal to 0s if participants nominated any self-connections
-      subMatW[c,as.numeric(unlist(selectWord))]  <- as.numeric ( raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(selectWord) ))] ) / 11 # Weighted matrix
+      for(p in unlist(selectWord)){
+        
+      if(subMatW[c,as.numeric(unlist(p))]==0){
+        
+        subMatW[c,as.numeric(unlist(p))]  <- as.numeric ( raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(p) ))] ) / 11 # Weighted matrix
+        
+        subMatW[as.numeric(unlist(p)),c]  <- as.numeric ( raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(p) ))] ) / 11 # Weighted matrix
+        
+      }else if(subMatW[c,as.numeric(unlist(p))]>0){
+        
+        subMatW[c,as.numeric(unlist(p))]  <- mean(c(subMatW[c,as.numeric(unlist(p))], as.numeric ( raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(p) ))] ) / 11 )) # Weighted matrix
+        
+        subMatW[as.numeric(unlist(p)),c]  <- mean(c(subMatW[as.numeric(unlist(p)),c], as.numeric ( raw[n,paste0("I",c,"_Sims_",as.numeric(unlist(p) ))] ) / 11 )) # Weighted matrix
+        
+      }
+        
+      }
       # if participant didn't indicate weight, replace with 0
       subMatW[is.na(subMatW)] <- 0
       # Flipped direction of fraction so more overlap is closer between identities
@@ -170,8 +186,8 @@ for(k in 1:4){
     colnames(subMatW) <- idNames
   
       # convert to graph
-    subGraph <- graph.adjacency(subMat)
-    subGraphW <- graph.adjacency(subMatW, weighted = T)
+    subGraph <- graph.adjacency(subMat, mode="undirected")
+    subGraphW <- graph.adjacency(subMatW, weighted = T, mode="undirected")
     # label
     assign(paste0("subIMat.",i,"_",k),subMat)
     assign(paste0("subIGraph.",i,"_",k),subGraph)
@@ -754,6 +770,7 @@ biasShort <- fullLong %>%
             varBias = sd(bias, na.rm=T))
 fullShort <- T1raw %>% select(subID, SE, SCC, NFC) %>% right_join(fullShort, by = "subID")
 biasShort$subID <- as.double(biasShort$subID)
+fullShort$subID <- as.double(fullShort$subID)
 fullShort <- fullShort %>% left_join(biasShort, by = "subID")
 ```
 
@@ -765,6 +782,7 @@ fullShort <- fullShort %>% left_join(biasShort, by = "subID")
 ```{r}
 write.csv(fullLong,"../Data/longIdentityNet.csv", row.names = F)
 write.csv(fullShort,"../Data/shortIdentityNet.csv", row.names = F)
+save.image("/Volumes/Research Project/Longitudinal Identity Network/Data/cleanedWorkspace.RData")
 ```
 
 
