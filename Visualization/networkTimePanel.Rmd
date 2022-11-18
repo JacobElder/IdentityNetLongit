@@ -1,14 +1,16 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
 library(groundhog)
-pkgs <-  c("tidyverse","here", "igraph", "ggplot2", "GGally")
+pkgs <-  c("tidyverse","here", "igraph", "ggplot2", "GGally", "ggpubr")
 groundhog.day <- '2022-07-25'
 groundhog.library(pkgs, groundhog.day)
-here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
+here::i_am("Visualization/networkTimePanel.Rmd")
 ```
 
 
@@ -26,54 +28,74 @@ sub <- 57241
 load("/Volumes/Research Project/Longitudinal Identity Network/Data/cleanedWorkspace.RData")
 ```
 
+# How many timepoints per participant
 
 ```{r}
-mat<-as.matrix(as_adj(subIGraph.57241_1))
-subGraph<-graph.adjacency(mat)
-
-set.seed(2)
-
-plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
-  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(subGraph)$Names), size = 3.5)
-plotOutdegree
+uIds <- unique(fullData$subID)
+timeMat <- matrix(nrow=0, ncol=2)
+for(i in uIds){
+ uTime <- unique(fullData$Time[fullData$subID==i]) 
+ timeMat <- rbind(timeMat, cbind(rep(i,length(uTime)), uTime))
+}
+colnames(timeMat) <- c("subID", "time")
+timeMat <- as.data.frame(timeMat)
+timeMat <- timeMat %>% arrange(subID, time)
 ```
 
+# Generate and print all plots for all participants and all timepoints
+
 ```{r}
-for(i in 1:4){
-  subGraph<-get(paste0("subIGraphW.57241_",i))
-  set.seed(2)
-  plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "degree", color = "phono", edge.color = "grey", mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
-  guides(color = FALSE, size = FALSE)
-  assign(paste0('p',i), plotOutdegree)
+for(s in uIds){
+  
+  maxTime <- max(timeMat$time[timeMat$subID==s])
+  listGraphs <- lapply(1:maxTime, function(x) get(paste0("subIGraphW.",s,"_",x)))
+  
+  print(paste0("Subject ",s))
+
+  for(i in 1:maxTime){
+    
+    if(vcount(listGraphs[[i]])<2){ # if only 1 identity, skip
+      next
+    }
+    
+    if(ecount(listGraphs[[i]]) > 0){
+      
+      set.seed(2)
+      
+      plotSingle <- ggnet2(listGraphs[[i]], alpha = 0.75, size = "degree", color = "phono",
+                              edge.color = "grey", edge.size = E(listGraphs[[i]])$weight, mode = "kamadakawai", label = T, layout.exp = .65) + 
+      guides(color = "none", size = "none") +
+        theme( panel.border = element_rect(colour = "black", fill=NA, size=5) )
+      
+    }else if(ecount(listGraphs[[i]])==0){
+      
+    plotSingle <- ggnet2(listGraphs[[i]], alpha = 0.75, size = "degree", color = "phono", mode = "kamadakawai", label = T, layout.exp = .65) + 
+      guides(color = "none", size = "none") +
+  theme(plot.background = element_rect(color = "black", size = 3))
+
+    }
+    
+    assign(paste0('p',i), plotSingle)
+    
+    print(paste0("Time ",i))
+    print(plotSingle)
+
+  }
+  
+  # Plot different grid arrange depending on how many timepoints appeared
+  if(maxTime==1){
+    plotComb <- p1
+  }else if(maxTime==2){
+    plotComb <- ggpubr::ggarrange(p1,p2,nrow=2,ncol=1,labels=c("T1","T2"))
+  }else if(maxTime==3){
+    plotComb <- ggpubr::ggarrange(p1,p2,p3,nrow=3,ncol=1,labels=c("T1","T2","T3"))
+  }else if(maxTime==4){
+    plotComb <- ggpubr::ggarrange(p1,p2,p3,p4,nrow=4,ncol=1,labels=c("T1","T2","T3","T4"))
+  }
+  
+  plotComb <- annotate_figure(plotComb, top = text_grob(paste0("Subject", s), 
+               color = "black", face = "bold", size = 14)) + theme(plot.background = element_rect(color = "red", size = 3))
+  
 }
 
-ggpubr::ggarrange(p1,p2,p3,p4,nrow=2,ncol=2,labels=c("T1","T2","T3","T4"))
-
-ggsave("~/Desktop/panel.png", dpi=300, width=6, height=6)
 ```
-
-```{r}
-mat<-as.matrix(as_adj(subIGraph.57241_1))
-subGraph<-graph.adjacency(mat)
-
-set.seed(2)
-
-library(GGally)
-plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
-  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(subGraph)$Names), size = 3.5)
-plotOutdegree
-```
-
-```{r}
-mat<-as.matrix(as_adj(subIGraph.57241_4))
-subGraph<-graph.adjacency(mat)
-
-set.seed(2)
-
-library(GGally)
-plotOutdegree <- ggnet2(subGraph, alpha = 0.75, size = "outdegree", color = "phono", edge.color = "grey", edge.alpha = 0.25, mode = "kamadakawai", layout.exp = .35, directed = TRUE, label = T) + 
-  guides(color = FALSE, size = FALSE) #+ geom_text(aes(label = V(subGraph)$Names), size = 3.5)
-plotOutdegree
-```
-
-
