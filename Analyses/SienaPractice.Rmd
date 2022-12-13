@@ -1,0 +1,12 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+identityData <- array( c( friend.data.w1, friend.data.w2, friend.data.w3 ),
+           dim = c( 50, 50, 3 ) )
+```
+
+

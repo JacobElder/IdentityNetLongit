@@ -16,6 +16,7 @@ here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
 ```{r, include=FALSE}
 fullLong <- read.csv(here("Data/longIdentityNet.csv"))
 fullShort <- read.csv(here("Data/shortIdentityNet.csv"))
+fullLong$subID <- as.numeric(fullLong$subID)
 fullData <- fullLong %>% full_join(fullShort, by = c("subID","Time"))
 
 indDiffs <- fullData[!duplicated(fullData$subID),]
@@ -94,61 +95,63 @@ ggpredict(m, terms = c("Categ")) %>% plot()
 ## Degree Centrality Predicts Strength of Identification
 
 ```{r}
-m<-lmer(I.Z ~  numID + Time.Z + degree + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(I.Z ~  numID + Time.Z + degree + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 
-m<-lmer(I.Z ~  numID + Time.Z + strength.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(I.Z ~  numID + Time.Z + strength.Z + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 ```
 
 ### No Change Across Time
 
 ```{r}
-m<-lmer(I.Z ~  numID + Time.Z * degree + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(I.Z ~  numID + Time.Z * degree + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 
-m<-lmer(I.Z ~  numID + Time.Z * strength.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(I.Z ~  numID + Time.Z * strength.Z + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 ```
 
 ## Identity centrality predicts mutability
 
 ```{r}
-m<-lmer(M.Z ~  numID + Time.Z + degree + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(M.Z ~  numID + Time.Z + degree + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 
-m<-lmer(M.Z ~  numID + Time.Z + strength.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(M.Z ~  numID + Time.Z + strength.Z + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 ```
 
 ### No change across time
 
 ```{r}
-m<-lmer(M.Z ~  numID + Time.Z * degree + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(M.Z ~  numID + Time.Z * degree + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 
-m<-lmer(M.Z ~  numID + Time.Z * strength.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(M.Z ~  numID + Time.Z * strength.Z + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 ```
 
 ## Identity centrality predicts entitativity
 
 ```{r}
-m<-lmer(Ent.Z ~  numID + Time.Z + degree + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(Ent.Z ~  numID + Time.Z + degree + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 
-m<-lmer(Ent.Z ~  numID + Time.Z + strength.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(Ent.Z ~  numID + Time.Z + strength.Z + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
+
 ```
 
 ### No change across time
 
 ```{r}
-m<-lmer(Ent.Z ~  numID + Time.Z * degree + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(Ent.Z ~  numID + Time.Z * degree + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
 
-m<-lmer(Ent.Z ~  numID + Time.Z * strength.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(Ent.Z ~  numID + Time.Z * strength.Z + ( Time.Z | subID) + (1 | subID:identity), data=fullData)
 summary(m)
+ggpredict(m, terms = c("Time.Z","strength.Z")) %>% plot()
 ```
 
 ## Identity centrality predicts mutability
@@ -226,6 +229,7 @@ summary(m)
 ```{r}
 m<-lmer(bias.Z ~  numID + Time.Z * degree + ( Time.Z | identity / subID), data=fullData)
 summary(m)
+ggpredict(m, terms = c("Time.Z","degree")) %>% plot()
 
 m<-lmer(bias.Z ~  numID + Time.Z * strength.Z + ( Time.Z | identity / subID), data=fullData)
 summary(m)
@@ -339,6 +343,26 @@ ggpredict(m, terms = c("Time.Z","strength.Z")) %>% plot()
 
 # Propagation
 
+```{r}
+m<-lmer(I_neigh.Z ~ I.Z * Time.Z + ( I.Z + Time.Z | subID ) + (1 | subID:identity), data=fullData)
+summary(m)
+ggpredict(m, terms = c("Time.Z","I.Z")) %>% plot()
+
+m<-lmer(I.Z ~ I_neigh.Z * Time.Z + ( I_neigh.Z + Time.Z | subID ) + (1 | subID:identity), data=fullData)
+summary(m)
+ggpredict(m, terms = c("Time.Z","I_neigh.Z")) %>% plot()
+```
+
+```{r}
+m<-lmer(P_neigh.Z ~ P.Z * Time.Z + ( P.Z + Time.Z | subID ) + (1 | subID:identity), data=fullData)
+summary(m)
+ggpredict(m, terms = c("Time.Z","P.Z")) %>% plot()
+
+m<-lmer(P.Z ~ P_neigh.Z * Time.Z + ( P_neigh.Z + Time.Z | subID ) + (1 | subID:identity), data=fullData)
+summary(m)
+ggpredict(m, terms = c("Time.Z","P_neigh.Z")) %>% plot()
+```
+
 ## Feelings of stigma propagate to neighbors across time
 
 ```{r}
@@ -371,9 +395,9 @@ ggpredict(m, terms = c("Time.Z","A.Z")) %>% plot()
 ````{r, echo=FALSE, warning=FALSE, include=FALSE}
 # m<-brm(I ~ A.Z * Time.Z + ( A.Z + Time.Z | subID ) + (1 | identity), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("logit"))
 
-m<-lmer(I.Z ~ Sim.Z * Time.Z + ( Sim + Time.Z | subID ) + (1 | identity : subID), data=fullData)
+m<-lmer(I.Z ~ Sim.Z * Time.Z + ( Sim.Z + Time.Z | subID ) + (1 | identity : subID), data=fullData)
 summary(m)
-ggpredict(m, terms = c("Time.Z","Sim")) %>% plot()
+ggpredict(m, terms = c("Time.Z","Sim.Z")) %>% plot()
 ```
 
 ## Prototypicality predicts identification across time
@@ -394,13 +418,7 @@ m<-lmer(Consist.Z ~  Should_neigh.Z + Should.Z + ( Should_neigh.Z+Should.Z | sub
 summary(m)
 ```
 
-## Feling like you are obligated to act identity-consistent predicts identity-consistency
 
-```{r}
-m<-lmer(Consist.Z ~ Should.Z * Time.Z + ( Should.Z + Time.Z | subID ) + ( Time.Z | subID:identity), data=fullData)
-summary(m)
-ggpredict(m, terms = c("Time.Z","Should.Z")) %>% plot()
-```
 
 # Individual Differences
 

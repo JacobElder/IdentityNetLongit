@@ -68,9 +68,20 @@ T2raw <- T2raw %>% rename(subID = id)
 T3raw <- T3raw %>% rename(subID = id)
 T4raw <- T4raw %>% rename(subID = id)
 
+replacement <- 500000
+for(i in 1:nrow(T1raw)){
+  if(is.na(T1raw$subID[i]) | is.emptyString(T1raw$subID[i])){
+    T1raw$subID[i] <- 500000
+    replacement <- replacement + 1
+  }
+}
+
 t1tot2subs <- intersect(T1raw$subID, T2raw$subID)
 
-T1raw <- T1raw[T1raw$subID %in% t1tot2subs,]
+# Two 60549's for some reason... Relabeling the first, they didn't do any other timepoints
+T1raw[T1raw$subID==60549,][1,]$subID <- "6054912345"
+
+#T1raw <- T1raw[T1raw$subID %in% t1tot2subs,]
 
 T1raw <- T1raw[!duplicated(T1raw$subID),]
 T2raw <- T2raw[!duplicated(T2raw$subID),]
@@ -782,6 +793,8 @@ fullShort <- fullShort %>% left_join(biasShort, by = "subID")
 ```{r}
 write.csv(fullLong,"../Data/longIdentityNet.csv", row.names = F)
 write.csv(fullShort,"../Data/shortIdentityNet.csv", row.names = F)
+arrow::write_parquet(fullLong,"../Data/longIdentityNet.parquet")
+arrow::write_parquet(fullShort,"../Data/shortIdentityNet.parquet")
 save.image("/Volumes/Research Project/Longitudinal Identity Network/Data/cleanedWorkspace.RData")
 ```
 
