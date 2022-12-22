@@ -1,0 +1,196 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(intergraph)
+l <- asDF(subIGraphW.57241_1)
+z <- asNetwork(l$edges, directed=F, l$vertexes)
+networkDynamic(z)
+
+plot(z,onset=1,terminus=5,rule = "any")
+```
+
+```{r}
+library(igraph)
+
+#load the edges with time stamp
+#there are three columns in edges: id1,id2,time
+edges <- rbind(cbind(asDF(subIGraphW.57241_1)$edges,time=1),
+               cbind(asDF(subIGraphW.57241_2)$edges,time=2),
+               cbind(asDF(subIGraphW.57241_3)$edges,time=3),
+               cbind(asDF(subIGraphW.57241_4)$edges,time=4)
+                     )
+
+#generate the full graph
+g <- graph.edgelist(as.matrix(edges[,c(1,2)]),directed=F)
+E(g)$time <- edges[,4]
+E(g)$weight <- edges[,3]
+
+#generate a cool palette for the graph
+YlOrBr <- c("#FFFFD4", "#FED98E", "#FE9929", "#D95F0E", "#993404")
+YlOrBr.Lab <- colorRampPalette(YlOrBr, space = "Lab")
+#colors for the nodes are chosen from the very beginning
+vcolor <- rev(YlOrBr.Lab(vcount(g)))
+
+#time in the edges goes from 1 to 300. We kick off at time 1
+ti <- 2
+#weights of edges formed up to time ti is 1. Future edges are weighted 0
+E(g)$weight <- ifelse(E(g)$time < ti,1,0)
+#generate first layout using weights.
+layout.old <- layout.reingold.tilford(g)
+#layout.old <- layout.fruchterman.reingold(g,params=list(weights=E(g)$weight))
+
+
+#total time of the dynamics
+total_time <- max(E(g)$time)
+#This is the time interval for the animation. In this case is taken to be 1/10 
+#of the time (i.e. 10 snapshots) between adding two consecutive nodes 
+dt <- 0.1
+#Output for each frame will be a png with HD size 1600x900 :)
+png(file="example%03d.png", width=1600,height=900)
+nsteps <- max(E(g)$time)
+#Time loop starts
+for(ti in 2:4){
+  #define weight for edges present up to time ti.
+  E(g)$weight <- ifelse(E(g)$time < ti,1,0) 
+  #Edges with non-zero weight are in gray. The rest are transparent
+  E(g)$color <- ifelse(E(g)$time < ti,"gray",rgb(0,0,0,0))
+  #Nodes with at least a non-zero weighted edge are in color. The rest are transparent
+  V(g)$color <- ifelse(graph.strength(g)==0,rgb(0,0,0,0),vcolor)
+  #given the new weights, we update the layout a little bit
+  layout.new <- layout.reingold.tilford(g)
+  #plot the new graph
+  plot(g,layout=layout.new,vertex.label="",vertex.size=1+2*log(graph.strength(g)),vertex.frame.color=V(g)$color,edge.width=1.5,asp=9/16,margin=-0.15)
+  #use the new layout in the next round
+  layout.old <- layout.new 
+}
+dev.off()
+```
+
+
+```{r}
+library(igraph)
+par(mfrow=c(2,2),mar=c(0,0,0,0), oma=c(0,0,0,0))
+layout.old <- layout.fruchterman.reingold(get(paste0("subIGraphW.57241_",i)))
+for(i in 1:4){
+     layout.new <- layout.fruchterman.reingold(get(paste0("subIGraphW.57241_",i)),params=list(niter=10,maxdelta=2,start=layout.old))
+     plot(get(paste0("subIGraphW.57241_",i)),layout=layout.new)
+     layout.old <- layout.new
+}
+
+
+#load the edges with time stamp
+#there are three columns in edges: id1,id2,time
+edges <- rbind(cbind(asDF(subIGraphW.57241_1)$edges,time=1),
+               cbind(asDF(subIGraphW.57241_2)$edges,time=2),
+               cbind(asDF(subIGraphW.57241_3)$edges,time=3),
+               cbind(asDF(subIGraphW.57241_4)$edges,time=4)
+                     )
+
+#generate the full graph
+g <- graph.edgelist(as.matrix(edges[,c(1,2)]),directed=F)
+E(g)$time <- edges[,4]
+E(g)$weight <- edges[,3]
+
+par(mfrow=c(2,2),mar=c(0,0,0,0), oma=c(0,0,0,0))
+layout.old = layout.fruchterman.reingold(g)
+for(i in 1:4){
+  gfam <- subgraph.edges(graph=g, eids=which(E(g)$time==1), delete.vertices = TRUE)
+  layout.new = layout.fruchterman.reingold(gfam,params=list(niter=10,maxdelta=2,start=layout.old))
+  plot(g,layout=layout.new)
+  layout.old = layout.new
+}
+```
+```{r}
+## Growing Model Graph - small multiple ggnet implementation
+
+library(dplyr)
+library(network)
+library(ggplot2)
+library(GGally)
+library(RColorBrewer)
+
+dat <- rbind(cbind(asDF(subIGraphW.57241_1)$edges,time=1),
+               cbind(asDF(subIGraphW.57241_2)$edges,time=2),
+               cbind(asDF(subIGraphW.57241_3)$edges,time=3),
+               cbind(asDF(subIGraphW.57241_4)$edges,time=4)
+                     )
+vertices <- asDF(subIGraphW.57241_1)$vertices
+net <- as.network( dat, vertices=vertices,multiple=T)
+
+# Set up our Network
+set.seed(777)
+#net <- network(intergraph::asNetwork(subIGraphW.57241_1),directed=F) #convert igraph object to network object
+
+# Set up the initial layout
+x = gplot.layout.fruchtermanreingold(net, NULL) 
+net %v% "x" = x[, 1]
+net %v% "y" = x[, 2]
+
+# # Get a data.frame of edges and add an arbitrary time unit
+# dat <- as.data.frame(igraph::get.edgelist(g), stringsAsFactors = F) #get dataframe of edges
+colnames(dat)<-c("from", "to","weight","time") #add column names
+
+# Convert df to a matrix of when node present or absent
+tmp = data.frame(nodeid = c(dat$from,dat$to), time=dat$time) %>% group_by(nodeid) %>% 
+      filter(time==min(time)) %>% unique %>% arrange(nodeid)
+
+out <- sapply(tmp$time, function(i) c(rep(0, i-1), rep(1,8-i+1)))
+out[out==0]<-NA
+
+
+
+# Define vertex attribute activation as 1 or NA:
+net %v% "t1" = out[1,]
+net %v% "t2" = out[2,]
+net %v% "t3" = out[3,]
+net %v% "t4" = out[4,]
+net %v% "t5" = out[5,]
+net %v% "t6" = out[6,]
+net %v% "t7" = out[7,]
+net %v% "t8" = out[8,]
+
+#for color
+mycols <- rev(brewer.pal(9, "Greens")[-1]) #remove really overly light color
+
+
+# Create ggnet2 plots removing inactive nodes and setting initial layout
+t1 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t1")
+t2 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t2")
+t3 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t3")
+t4 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t4")
+t5 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t5")
+t6 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t6")
+t7 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t7")
+t8 = ggnet2(net, mode = c("x", "y"), size = 0,  node.color = mycols[tmp$time], na.rm = "t8")
+
+
+# Set up some plot features
+b1 = theme(panel.background = element_rect(color = "grey50"),
+           plot.title = element_text(size=rel(2.1)))
+b2 = geom_point(aes(color = color), size = 4, color = "white")
+b3 =  geom_point(aes(color = color), size = 3, alpha = 0.4)
+b4 =  geom_point(aes(color = color), size = 3) 
+b5 =  guides(color = FALSE)
+y1 = scale_y_continuous(limits = range(x[, 2] * 1.1), breaks = NULL)
+x1 = scale_x_continuous(limits = range(x[, 1] * 1.1), breaks = NULL)
+
+# show each temporal network
+gridExtra::grid.arrange(t1 + x1 + y1  + ggtitle("t = 1") + b1 + b2 + b3 + b4 + b5,
+                        t2 + x1 + y1  + ggtitle("t = 2") + b1 + b2 + b3 + b4 + b5,
+                        t3 + x1 + y1  + ggtitle("t = 3") + b1 + b2 + b3 + b4 + b5,
+                        t4 + x1 + y1  + ggtitle("t = 4") + b1 + b2 + b3 + b4 + b5,
+                        t5 + x1 + y1  + ggtitle("t = 5") + b1 + b2 + b3 + b4 + b5,
+                        t6 + x1 + y1  + ggtitle("t = 6") + b1 + b2 + b3 + b4 + b5,
+                        t7 + x1 + y1  + ggtitle("t = 7") + b1 + b2 + b3 + b4 + b5,
+                        t8 + x1 + y1  + ggtitle("t = 8") + b1 + b2 + b3 + b4 + b5,
+                        nrow = 2)
+```
+
+

@@ -5,8 +5,80 @@ output: html_notebook
 
 
 ```{r}
-identityData <- array( c( friend.data.w1, friend.data.w2, friend.data.w3 ),
-           dim = c( 50, 50, 3 ) )
+
+library(RSiena)
+fullLong <- read.csv(here("Data/longIdentityNet.csv"))
+idCovs <- subset(fullLong, subID==57241)
+idCovsW <- idCovs %>% select(identity, idCode, Time, M:BelPer) %>% arrange(idCode, Time) %>% pivot_wider(id_cols="identity", names_from="Time", values_from="I")
+strength <- idCovsW %>% select(`1`:`4`) %>% as.matrix(.)
+
+identityData <- array( c( as.matrix(as_adjacency_matrix(subIGraphW.57241_1)),
+                          as.matrix(as_adjacency_matrix(subIGraphW.57241_2)),
+                          as.matrix(as_adjacency_matrix(subIGraphW.57241_3)),
+                          as.matrix(as_adjacency_matrix(subIGraphW.57241_4))
+                          ),
+           dim = c( 11, 11, 4 ) )
+    identity <- sienaDependent(identityData)
+    strengthCov <- varCovar( strength )
+    strengthDV <- sienaDependent( strength, type = "behavior" )
+    mydata <- sienaDataCreate( identity, strengthCov )
+    myeff <- getEffects( mydata )
+    NBdata <- sienaDataCreate( identity, strengthDV )
+    NBdata
+    NBeff <- getEffects( NBdata )
+effectsDocumentation(NBeff)
+NBeff <- includeEffects( NBeff, transTrip, transRecTrip )
+NBeff <- includeEffects( NBeff, egoX, egoSqX, altX, altSqX, diffSqX,
+                         interaction1 = "strength" )
+NBeff <- includeEffects( NBeff, avAlt, name="identification",
+                         interaction1 = "identity" )
+NBeff
+myalgorithm1 <- sienaAlgorithmCreate( projname = 's50_NB' )
+NBans <- siena07( myalgorithm1, data = NBdata, effects = NBeff)
+NBans
 ```
+
+```{r}
+# Hyp: drinking is 'contagious' (i.e., peer influence)
+strengthContagious <- includeEffects(NBeff,avSim,
+	interaction1="identity",name="strengthDV")
+# estimate the model, you can increase estimation time by 
+#   using more processors with the nbrNodes option
+# create an object with options for algorithm tuning:
+modelOptions <- sienaAlgorithmCreate(
+	projname='lab060520', MaxDegree=c(identity=11),
+	doubleAveraging=0, diagonalize=.2, seed=786840)  # the seed is optional
+
+# estimate the model, you can increase estimation time by 
+#   using more processors with the nbrNodes option
+myResults <- siena07(modelOptions, data=mydata,
+	effects= strengthContagious, batch=FALSE, verbose=TRUE,
+	useCluster=TRUE, nbrNodes=3)
+myResults  # examine results
+```
+
+```{r}
+NBeff <- includeEffects( NBeff, avSim, name="strengthDV",
+                         interaction1 = "identity" )
+NBans <- siena07( myalgorithm1, data = NBdata, effects = NBeff)
+NBans
+```
+
+```{r}
+NBeff <- includeEffects( NBeff, avAlt, name="strengthDV",
+                         interaction1 = "identity" )
+NBans <- siena07( myalgorithm1, data = NBdata, effects = NBeff)
+NBans
+```
+
+```{r}
+myModelDrinkSmoke <- includeEffects(NBeff,simX,
+	interaction1="strengthDV",name="identity")
+NBans <- siena07( myalgorithm1, data = NBdata, effects = NBeff)
+NBans
+```
+
+
+
 
 

@@ -676,7 +676,111 @@ for(n in 2:4){
     uIdentities <- unique(fullLong$identity[fullLong$subID==subID])
     for(k in 1:length(uIdentities)){
       identity <- uIdentities[k]
+      
+      # Identification Change
+      
       fullLong$I_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Identification Previous
+      
+      fullLong$I_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$I[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Degree Change
+      
+      fullLong$deg_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$degree[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$degree[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Degree Previous
+      
+      fullLong$deg_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$degree[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Strength Change
+      
+      fullLong$streng_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$strength[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$strength[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Strength Previous
+      
+      fullLong$streng_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$strength[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # IdUnc Change
+      
+      fullLong$IdUnc_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # IdUnc Previous
+      
+      fullLong$IdUnc_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # MemUnc Change
+      
+      fullLong$MemUnc_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # MemUnc Previous
+      
+      fullLong$MemUnc_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # P Change
+      
+      fullLong$P_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$P[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$P[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # P Previous
+      
+      fullLong$P_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$P[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # St Change
+      
+      fullLong$St_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$St[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$St[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # St Previous
+      
+      fullLong$St_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$St[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # Ent Change
+      
+      fullLong$Ent_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Ent[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Ent[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Ent Previous
+      
+      fullLong$Ent_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Ent[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # IdUnc Change
+      
+      fullLong$IdUnc_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # IdUnc Previous
+      
+      fullLong$IdUnc_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$IdUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # Sim Change
+      
+      fullLong$Sim_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Sim[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Sim[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Sim Previous
+      
+      fullLong$Sim_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Sim[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # Proto Change
+      
+      fullLong$Proto_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Proto[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Proto[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Proto Previous
+      
+      fullLong$Proto_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Proto[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+            # A Change
+      
+      fullLong$A_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$A[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$A[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # A Previous
+      
+      fullLong$A_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$A[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # D Change
+      
+      fullLong$D_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$D[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$D[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # D Previous
+      
+      fullLong$D_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$D[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
     }
   }
 }

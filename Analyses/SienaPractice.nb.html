@@ -1760,15 +1760,194 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaWRlbnRpdHlEYXRhIDwtIGFycmF5KCBjKCBmcmllbmQuZGF0YS53MSwgZnJpZW5kLmRhdGEudzIsIGZyaWVuZC5kYXRhLnczICksXG4gICAgICAgICAgIGRpbSA9IGMoIDUwLCA1MCwgMyApIClcbmBgYCJ9 -->
-<pre class="r"><code>identityData &lt;- array( c( friend.data.w1, friend.data.w2, friend.data.w3 ),
-           dim = c( 50, 50, 3 ) )</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJhbnNcblxuYGBgIn0= -->
+<pre class="r"><code>NBans
+</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVzLCBzdGFuZGFyZCBlcnJvcnMgYW5kIGNvbnZlcmdlbmNlIHQtcmF0aW9zXG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRXN0aW1hdGUgICBTdGFuZGFyZCAgIENvbnZlcmdlbmNlIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRXJyb3IgICAgICB0LXJhdGlvICAgXG5OZXR3b3JrIER5bmFtaWNzIFxuICAxLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAxKSAgMS4wMzM4ICAoIE5BICAgICAgICkgICAgMC4wMDE3ICAgXG4gIDIuIHJhdGUgY29uc3RhbnQgaWRlbnRpdHkgcmF0ZSAocGVyaW9kIDIpICAwLjEwMDAgICggTkEgICAgICAgKSAgICAwLjAwMDAgICBcbiAgMy4gcmF0ZSBjb25zdGFudCBpZGVudGl0eSByYXRlIChwZXJpb2QgMykgIDAuMjcyOSAgKCBOQSAgICAgICApICAgLTAuMDM4NyAgIFxuXG5CZWhhdmlvciBEeW5hbWljc1xuICA0LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDEpICAgICAgICAgMC40MzY1ICAoIE5BICAgICAgICkgICAgMC4wMjQ3ICAgXG4gIDUuIHJhdGUgcmF0ZSBzdHJlbmd0aERWIChwZXJpb2QgMikgICAgICAgICAwLjk0NjcgICggTkEgICAgICAgKSAgICAwLjA4MzcgICBcbiAgNi4gcmF0ZSByYXRlIHN0cmVuZ3RoRFYgKHBlcmlvZCAzKSAgICAgICAgIDAuODU1NCAgKCBOQSAgICAgICApICAgLTAuMDQ1NCAgIFxuICA3LiBldmFsIHN0cmVuZ3RoRFYgbGluZWFyIHNoYXBlICAgICAgICAgICAgMC44MjYwICAoIE5BICAgICAgICkgICAgMC4wNjU4ICAgXG4gIDguIGV2YWwgc3RyZW5ndGhEViBxdWFkcmF0aWMgc2hhcGUgICAgICAgIC0wLjY5MTUgICggTkEgICAgICAgKSAgIC0wLjEwNjggICBcblxuT3ZlcmFsbCBtYXhpbXVtIGNvbnZlcmdlbmNlIHJhdGlvOiAgICAgICAgTkEgXG5cblxuVG90YWwgb2YgMzI2NiBpdGVyYXRpb24gc3RlcHMuXG4ifQ== -->
+<pre><code>Estimates, standard errors and convergence t-ratios
+
+                                            Estimate   Standard   Convergence 
+                                                         Error      t-ratio   
+Network Dynamics 
+  1. rate constant identity rate (period 1)  1.0338  ( NA       )    0.0017   
+  2. rate constant identity rate (period 2)  0.1000  ( NA       )    0.0000   
+  3. rate constant identity rate (period 3)  0.2729  ( NA       )   -0.0387   
+
+Behavior Dynamics
+  4. rate rate strengthDV (period 1)         0.4365  ( NA       )    0.0247   
+  5. rate rate strengthDV (period 2)         0.9467  ( NA       )    0.0837   
+  6. rate rate strengthDV (period 3)         0.8554  ( NA       )   -0.0454   
+  7. eval strengthDV linear shape            0.8260  ( NA       )    0.0658   
+  8. eval strengthDV quadratic shape        -0.6915  ( NA       )   -0.1068   
+
+Overall maximum convergence ratio:        NA 
+
+
+Total of 3266 iteration steps.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBlc3RpbWF0ZSB0aGUgbW9kZWwsIHlvdSBjYW4gaW5jcmVhc2UgZXN0aW1hdGlvbiB0aW1lIGJ5IFxuIyAgIHVzaW5nIG1vcmUgcHJvY2Vzc29ycyB3aXRoIHRoZSBuYnJOb2RlcyBvcHRpb25cbm15UmVzdWx0cyA8LSBzaWVuYTA3KG1vZGVsT3B0aW9ucywgZGF0YT1teWRhdGEsXG5cdGVmZmVjdHM9IHN0cmVuZ3RoQ29udGFnaW91cywgYmF0Y2g9RkFMU0UsIHZlcmJvc2U9VFJVRSxcblx0dXNlQ2x1c3Rlcj1UUlVFLCBuYnJOb2Rlcz0zKVxuXG5gYGAifQ== -->
+<pre class="r"><code># estimate the model, you can increase estimation time by 
+#   using more processors with the nbrNodes option
+myResults &lt;- siena07(modelOptions, data=mydata,
+    effects= strengthContagious, batch=FALSE, verbose=TRUE,
+    useCluster=TRUE, nbrNodes=3)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICBzdHJlbmd0aERWLnJhdGUuMSAgICAgICAgICAgICAgIHN0cmVuZ3RoRFYucmF0ZS4yIFxuICBcInN0cmVuZ3RoRFZ8UmF0ZXxyYXRlfEdyb3VwMVwiICAgXCJzdHJlbmd0aERWfFJhdGV8cmF0ZXxHcm91cDFcIiBcbiAgICAgICAgICAgICAgc3RyZW5ndGhEVi5yYXRlLjMgICAgICAgICAgIHN0cmVuZ3RoRFYub2JqLmV2YWwuMSBcbiAgXCJzdHJlbmd0aERWfFJhdGV8cmF0ZXxHcm91cDFcIiBcInN0cmVuZ3RoRFZ8bGluZWFyfGV2YWx8R3JvdXAxXCIgXG4gICAgICAgICAgc3RyZW5ndGhEVi5vYmouZXZhbC4yICAgICAgICAgIHN0cmVuZ3RoRFYub2JqLmV2YWwuMTEgXG4gIFwic3RyZW5ndGhEVnxxdWFkfGV2YWx8R3JvdXAxXCIgIFwic3RyZW5ndGhEVnxhdlNpbXxldmFsfEdyb3VwMVwiIFxuaW52YWxpZCBlZmZlY3QgcmVxdWVzdGVkOiBzZWUgYWJvdmU7IFxudGhlcmUgc2VlbXMgdG8gYmUgYSBtaXNtYXRjaCBiZXR3ZWVuIGRhdGEgc2V0IGFuZCBlZmZlY3RzIG9iamVjdC5cbiJ9 -->
+<pre><code>              strengthDV.rate.1               strengthDV.rate.2 
+  &quot;strengthDV|Rate|rate|Group1&quot;   &quot;strengthDV|Rate|rate|Group1&quot; 
+              strengthDV.rate.3           strengthDV.obj.eval.1 
+  &quot;strengthDV|Rate|rate|Group1&quot; &quot;strengthDV|linear|eval|Group1&quot; 
+          strengthDV.obj.eval.2          strengthDV.obj.eval.11 
+  &quot;strengthDV|quad|eval|Group1&quot;  &quot;strengthDV|avSim|eval|Group1&quot; 
+invalid effect requested: see above; 
+there seems to be a mismatch between data set and effects object.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gaW5pdGlhbGl6ZUZSQU4oeiwgeCwgaW5pdEMgPSBGQUxTRSwgLi4uKSA6IFxuICBQZXJoYXBzIHRoZSBlZmZlY3RzIG9iamVjdCBtdXN0IGJlIGNyZWF0ZWQgZnJvbSBzY3JhdGNoLlxuIn0= -->
+<pre><code>Error in initializeFRAN(z, x, initC = FALSE, ...) : 
+  Perhaps the effects object must be created from scratch.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJhbnNcblxuYGBgIn0= -->
+<pre class="r"><code>NBans
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVzLCBzdGFuZGFyZCBlcnJvcnMgYW5kIGNvbnZlcmdlbmNlIHQtcmF0aW9zXG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRXN0aW1hdGUgICBTdGFuZGFyZCAgIENvbnZlcmdlbmNlIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRXJyb3IgICAgICB0LXJhdGlvICAgXG5OZXR3b3JrIER5bmFtaWNzIFxuICAxLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAxKSAgMC45OTkyICAoIE5BICAgICAgICkgICAtMC4wMzAwICAgXG4gIDIuIHJhdGUgY29uc3RhbnQgaWRlbnRpdHkgcmF0ZSAocGVyaW9kIDIpICAwLjEwMDAgICggTkEgICAgICAgKSAgICAwLjAwMDAgICBcbiAgMy4gcmF0ZSBjb25zdGFudCBpZGVudGl0eSByYXRlIChwZXJpb2QgMykgIDAuMjc1NyAgKCBOQSAgICAgICApICAgIDAuMDE0MiAgIFxuXG5CZWhhdmlvciBEeW5hbWljc1xuICA0LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDEpICAgICAgICAgMC4zMzU3ICAoIE5BICAgICAgICkgICAtMC4wNTE0ICAgXG4gIDUuIHJhdGUgcmF0ZSBzdHJlbmd0aERWIChwZXJpb2QgMikgICAgICAgICAwLjg2OTggICggTkEgICAgICAgKSAgICAwLjA1MDQgICBcbiAgNi4gcmF0ZSByYXRlIHN0cmVuZ3RoRFYgKHBlcmlvZCAzKSAgICAgICAgIDAuOTgxMSAgKCBOQSAgICAgICApICAgIDAuMDU1NiAgIFxuICA3LiBldmFsIHN0cmVuZ3RoRFYgbGluZWFyIHNoYXBlICAgICAgICAgICAgMS4yMTA0ICAoIE5BICAgICAgICkgICAgMC4wMjEzICAgXG4gIDguIGV2YWwgc3RyZW5ndGhEViBxdWFkcmF0aWMgc2hhcGUgICAgICAgIC0wLjg4OTAgICggTkEgICAgICAgKSAgIC0wLjA3MTYgICBcbiAgOS4gZXZhbCBzdHJlbmd0aERWIGF2ZXJhZ2Ugc2ltaWxhcml0eSAgICAgLTEuOTIwOCAgKCBOQSAgICAgICApICAgIDAuMDM5MSAgIFxuXG5PdmVyYWxsIG1heGltdW0gY29udmVyZ2VuY2UgcmF0aW86ICAgICAgICBOQSBcblxuXG5Ub3RhbCBvZiAzNDE3IGl0ZXJhdGlvbiBzdGVwcy5cbiJ9 -->
+<pre><code>Estimates, standard errors and convergence t-ratios
+
+                                            Estimate   Standard   Convergence 
+                                                         Error      t-ratio   
+Network Dynamics 
+  1. rate constant identity rate (period 1)  0.9992  ( NA       )   -0.0300   
+  2. rate constant identity rate (period 2)  0.1000  ( NA       )    0.0000   
+  3. rate constant identity rate (period 3)  0.2757  ( NA       )    0.0142   
+
+Behavior Dynamics
+  4. rate rate strengthDV (period 1)         0.3357  ( NA       )   -0.0514   
+  5. rate rate strengthDV (period 2)         0.8698  ( NA       )    0.0504   
+  6. rate rate strengthDV (period 3)         0.9811  ( NA       )    0.0556   
+  7. eval strengthDV linear shape            1.2104  ( NA       )    0.0213   
+  8. eval strengthDV quadratic shape        -0.8890  ( NA       )   -0.0716   
+  9. eval strengthDV average similarity     -1.9208  ( NA       )    0.0391   
+
+Overall maximum convergence ratio:        NA 
+
+
+Total of 3417 iteration steps.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJlZmYgPC0gaW5jbHVkZUVmZmVjdHMoIE5CZWZmLCBhdkFsdCwgbmFtZT1cInN0cmVuZ3RoRFZcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICBpbnRlcmFjdGlvbjEgPSBcImlkZW50aXR5XCIgKVxuYGBgIn0= -->
+<pre class="r"><code>NBeff &lt;- includeEffects( NBeff, avAlt, name=&quot;strengthDV&quot;,
+                         interaction1 = &quot;identity&quot; )</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICBlZmZlY3ROYW1lICAgICAgICAgICAgICAgaW5jbHVkZSBmaXggICB0ZXN0ICBpbml0aWFsVmFsdWUgcGFybVxuMSBzdHJlbmd0aERWIGF2ZXJhZ2UgYWx0ZXIgVFJVRSAgICBGQUxTRSBGQUxTRSAgICAgICAgICAwICAgMCAgIFxuIn0= -->
+<pre><code>  effectName               include fix   test  initialValue parm
+1 strengthDV average alter TRUE    FALSE FALSE          0   0   </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJhbnMgPC0gc2llbmEwNyggbXlhbGdvcml0aG0xLCBkYXRhID0gTkJkYXRhLCBlZmZlY3RzID0gTkJlZmYpXG5gYGAifQ== -->
+<pre class="r"><code>NBans &lt;- siena07( myalgorithm1, data = NBdata, effects = NBeff)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogKioqIFdhcm5pbmc6IENvdmFyaWFuY2UgbWF0cml4IG5vdCBwb3NpdGl2ZSBkZWZpbml0ZSAqKiogXG4qKiogU3RhbmRhcmQgZXJyb3JzIG5vdCByZWxpYWJsZSAqKipcblRoZSBmb2xsb3dpbmcgaXMgYXBwcm94aW1hdGVseSBhIGxpbmVhciBjb21iaW5hdGlvbiBcbmZvciB3aGljaCB0aGUgZGF0YSBjYXJyaWVzIG5vIGluZm9ybWF0aW9uOlxuLTEgKiBiZXRhWzRdICsgMSAqIGJldGFbNV0gKyAtMSAqIGJldGFbNl0gKyAtMSAqIGJldGFbN11cbkl0IGlzIGFkdmlzYWJsZSB0byBkcm9wIG9uZSBvciBtb3JlIG9mIHRoZXNlIGVmZmVjdHMuXG4ifQ== -->
+<pre><code>Warning: *** Warning: Covariance matrix not positive definite *** 
+*** Standard errors not reliable ***
+The following is approximately a linear combination 
+for which the data carries no information:
+-1 * beta[4] + 1 * beta[5] + -1 * beta[6] + -1 * beta[7]
+It is advisable to drop one or more of these effects.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJhbnNcbmBgYCJ9 -->
+<pre class="r"><code>NBans</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVzLCBzdGFuZGFyZCBlcnJvcnMgYW5kIGNvbnZlcmdlbmNlIHQtcmF0aW9zXG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEVzdGltYXRlICAgU3RhbmRhcmQgICBDb252ZXJnZW5jZSBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBFcnJvciAgICAgIHQtcmF0aW8gICBcbk5ldHdvcmsgRHluYW1pY3MgXG4gICAxLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAxKSAgMC45OTM0ICAoIE5BICAgICAgICkgICAtMC4wMDUwICAgXG4gICAyLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAyKSAgMC4xMDAwICAoIE5BICAgICAgICkgICAgMC4wMDAwICAgXG4gICAzLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAzKSAgMC4yNjgzICAoIE5BICAgICAgICkgICAtMC4wNjU0ICAgXG5cbkJlaGF2aW9yIER5bmFtaWNzXG4gICA0LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDEpICAgICAgICAgMC4zNjAzICAoIE5BICAgICAgICkgICAtMC4wNDI2ICAgXG4gICA1LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDIpICAgICAgICAgMS4yODMwICAoIE5BICAgICAgICkgICAgMC4wMzk3ICAgXG4gICA2LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDMpICAgICAgICAgMS4xMDM5ICAoIE5BICAgICAgICkgICAtMC4wNTEyICAgXG4gICA3LiBldmFsIHN0cmVuZ3RoRFYgbGluZWFyIHNoYXBlICAgICAgICAgICAgMS42MTM1ICAoIE5BICAgICAgICkgICAgMC4wNzc3ICAgXG4gICA4LiBldmFsIHN0cmVuZ3RoRFYgcXVhZHJhdGljIHNoYXBlICAgICAgICAtMi4wOTc4ICAoIE5BICAgICAgICkgICAtMC4wMzMzICAgXG4gICA5LiBldmFsIHN0cmVuZ3RoRFYgYXZlcmFnZSBzaW1pbGFyaXR5ICAgICAtNy4zODIzICAoIE5BICAgICAgICkgICAgMC4wNzE1ICAgXG4gIDEwLiBldmFsIHN0cmVuZ3RoRFYgYXZlcmFnZSBhbHRlciAgICAgICAgICAgNC44ODQzICAoIE5BICAgICAgICkgICAtMC4wMDE3ICAgXG5cbk92ZXJhbGwgbWF4aW11bSBjb252ZXJnZW5jZSByYXRpbzogICAgICAgIE5BIFxuXG5cblRvdGFsIG9mIDM0NjYgaXRlcmF0aW9uIHN0ZXBzLlxuIn0= -->
+<pre><code>Estimates, standard errors and convergence t-ratios
+
+                                             Estimate   Standard   Convergence 
+                                                          Error      t-ratio   
+Network Dynamics 
+   1. rate constant identity rate (period 1)  0.9934  ( NA       )   -0.0050   
+   2. rate constant identity rate (period 2)  0.1000  ( NA       )    0.0000   
+   3. rate constant identity rate (period 3)  0.2683  ( NA       )   -0.0654   
+
+Behavior Dynamics
+   4. rate rate strengthDV (period 1)         0.3603  ( NA       )   -0.0426   
+   5. rate rate strengthDV (period 2)         1.2830  ( NA       )    0.0397   
+   6. rate rate strengthDV (period 3)         1.1039  ( NA       )   -0.0512   
+   7. eval strengthDV linear shape            1.6135  ( NA       )    0.0777   
+   8. eval strengthDV quadratic shape        -2.0978  ( NA       )   -0.0333   
+   9. eval strengthDV average similarity     -7.3823  ( NA       )    0.0715   
+  10. eval strengthDV average alter           4.8843  ( NA       )   -0.0017   
+
+Overall maximum convergence ratio:        NA 
+
+
+Total of 3466 iteration steps.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXlNb2RlbERyaW5rU21va2UgPC0gaW5jbHVkZUVmZmVjdHMoTkJlZmYsc2ltWCxcblx0aW50ZXJhY3Rpb24xPVwic3RyZW5ndGhEVlwiLG5hbWU9XCJpZGVudGl0eVwiKVxuYGBgIn0= -->
+<pre class="r"><code>myModelDrinkSmoke &lt;- includeEffects(NBeff,simX,
+    interaction1=&quot;strengthDV&quot;,name=&quot;identity&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICBlZmZlY3ROYW1lICAgICAgICAgICAgaW5jbHVkZSBmaXggICB0ZXN0ICBpbml0aWFsVmFsdWUgcGFybVxuMSBzdHJlbmd0aERWIHNpbWlsYXJpdHkgVFJVRSAgICBGQUxTRSBGQUxTRSAgICAgICAgICAwICAgMCAgIFxuIn0= -->
+<pre><code>  effectName            include fix   test  initialValue parm
+1 strengthDV similarity TRUE    FALSE FALSE          0   0   </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJhbnMgPC0gc2llbmEwNyggbXlhbGdvcml0aG0xLCBkYXRhID0gTkJkYXRhLCBlZmZlY3RzID0gTkJlZmYpXG5gYGAifQ== -->
+<pre class="r"><code>NBans &lt;- siena07( myalgorithm1, data = NBdata, effects = NBeff)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogKioqIFdhcm5pbmc6IENvdmFyaWFuY2UgbWF0cml4IG5vdCBwb3NpdGl2ZSBkZWZpbml0ZSAqKiogXG4qKiogU3RhbmRhcmQgZXJyb3JzIG5vdCByZWxpYWJsZSAqKipcblRoZSBmb2xsb3dpbmcgaXMgYXBwcm94aW1hdGVseSBhIGxpbmVhciBjb21iaW5hdGlvbiBcbmZvciB3aGljaCB0aGUgZGF0YSBjYXJyaWVzIG5vIGluZm9ybWF0aW9uOlxuMSAqIGJldGFbNF0gKyAtMSAqIGJldGFbNV0gKyAxICogYmV0YVs2XSArIDEgKiBiZXRhWzddXG5JdCBpcyBhZHZpc2FibGUgdG8gZHJvcCBvbmUgb3IgbW9yZSBvZiB0aGVzZSBlZmZlY3RzLlxuIn0= -->
+<pre><code>Warning: *** Warning: Covariance matrix not positive definite *** 
+*** Standard errors not reliable ***
+The following is approximately a linear combination 
+for which the data carries no information:
+1 * beta[4] + -1 * beta[5] + 1 * beta[6] + 1 * beta[7]
+It is advisable to drop one or more of these effects.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTkJhbnNcbmBgYCJ9 -->
+<pre class="r"><code>NBans</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXN0aW1hdGVzLCBzdGFuZGFyZCBlcnJvcnMgYW5kIGNvbnZlcmdlbmNlIHQtcmF0aW9zXG5cbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEVzdGltYXRlICAgU3RhbmRhcmQgICBDb252ZXJnZW5jZSBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBFcnJvciAgICAgIHQtcmF0aW8gICBcbk5ldHdvcmsgRHluYW1pY3MgXG4gICAxLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAxKSAgMC45OTA3ICAoIE5BICAgICAgICkgICAtMC4wMzk1ICAgXG4gICAyLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAyKSAgMC4xMDAwICAoIE5BICAgICAgICkgICAgMC4wMDAwICAgXG4gICAzLiByYXRlIGNvbnN0YW50IGlkZW50aXR5IHJhdGUgKHBlcmlvZCAzKSAgMC4yNzc0ICAoIE5BICAgICAgICkgICAtMC4wNDQ0ICAgXG5cbkJlaGF2aW9yIER5bmFtaWNzXG4gICA0LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDEpICAgICAgICAgMC4zMzg2ICAoIE5BICAgICAgICkgICAgMC4wNDUxICAgXG4gICA1LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDIpICAgICAgICAgMS4zMzE5ICAoIE5BICAgICAgICkgICAtMC4wMTQxICAgXG4gICA2LiByYXRlIHJhdGUgc3RyZW5ndGhEViAocGVyaW9kIDMpICAgICAgICAgMS4wMjk5ICAoIE5BICAgICAgICkgICAgMC4wMTIyICAgXG4gICA3LiBldmFsIHN0cmVuZ3RoRFYgbGluZWFyIHNoYXBlICAgICAgICAgICAgMS40NjY5ICAoIE5BICAgICAgICkgICAtMC4wMzk1ICAgXG4gICA4LiBldmFsIHN0cmVuZ3RoRFYgcXVhZHJhdGljIHNoYXBlICAgICAgICAtMi4xMTg3ICAoIE5BICAgICAgICkgICAgMC4wODA3ICAgXG4gICA5LiBldmFsIHN0cmVuZ3RoRFYgYXZlcmFnZSBzaW1pbGFyaXR5ICAgICAtNy42NjkzICAoIE5BICAgICAgICkgICAgMC4wMDE0ICAgXG4gIDEwLiBldmFsIHN0cmVuZ3RoRFYgYXZlcmFnZSBhbHRlciAgICAgICAgICAgNS4wMzk0ICAoIE5BICAgICAgICkgICAgMC4wNTEyICAgXG5cbk92ZXJhbGwgbWF4aW11bSBjb252ZXJnZW5jZSByYXRpbzogICAgICAgIE5BIFxuXG5cblRvdGFsIG9mIDMyNjYgaXRlcmF0aW9uIHN0ZXBzLlxuIn0= -->
+<pre><code>Estimates, standard errors and convergence t-ratios
+
+                                             Estimate   Standard   Convergence 
+                                                          Error      t-ratio   
+Network Dynamics 
+   1. rate constant identity rate (period 1)  0.9907  ( NA       )   -0.0395   
+   2. rate constant identity rate (period 2)  0.1000  ( NA       )    0.0000   
+   3. rate constant identity rate (period 3)  0.2774  ( NA       )   -0.0444   
+
+Behavior Dynamics
+   4. rate rate strengthDV (period 1)         0.3386  ( NA       )    0.0451   
+   5. rate rate strengthDV (period 2)         1.3319  ( NA       )   -0.0141   
+   6. rate rate strengthDV (period 3)         1.0299  ( NA       )    0.0122   
+   7. eval strengthDV linear shape            1.4669  ( NA       )   -0.0395   
+   8. eval strengthDV quadratic shape        -2.1187  ( NA       )    0.0807   
+   9. eval strengthDV average similarity     -7.6693  ( NA       )    0.0014   
+  10. eval strengthDV average alter           5.0394  ( NA       )    0.0512   
+
+Overall maximum convergence ratio:        NA 
+
+
+Total of 3266 iteration steps.</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCmBgYHtyfQppZGVudGl0eURhdGEgPC0gYXJyYXkoIGMoIGZyaWVuZC5kYXRhLncxLCBmcmllbmQuZGF0YS53MiwgZnJpZW5kLmRhdGEudzMgKSwKICAgICAgICAgICBkaW0gPSBjKCA1MCwgNTAsIDMgKSApCmBgYAoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCmBgYHtyfQoKbGlicmFyeShSU2llbmEpCmZ1bGxMb25nIDwtIHJlYWQuY3N2KGhlcmUoIkRhdGEvbG9uZ0lkZW50aXR5TmV0LmNzdiIpKQppZENvdnMgPC0gc3Vic2V0KGZ1bGxMb25nLCBzdWJJRD09NTcyNDEpCmlkQ292c1cgPC0gaWRDb3ZzICU+JSBzZWxlY3QoaWRlbnRpdHksIGlkQ29kZSwgVGltZSwgTTpCZWxQZXIpICU+JSBhcnJhbmdlKGlkQ29kZSwgVGltZSkgJT4lIHBpdm90X3dpZGVyKGlkX2NvbHM9ImlkZW50aXR5IiwgbmFtZXNfZnJvbT0iVGltZSIsIHZhbHVlc19mcm9tPSJJIikKc3RyZW5ndGggPC0gaWRDb3ZzVyAlPiUgc2VsZWN0KGAxYDpgNGApICU+JSBhcy5tYXRyaXgoLikKCmlkZW50aXR5RGF0YSA8LSBhcnJheSggYyggYXMubWF0cml4KGFzX2FkamFjZW5jeV9tYXRyaXgoc3ViSUdyYXBoVy41NzI0MV8xKSksCiAgICAgICAgICAgICAgICAgICAgICAgICAgYXMubWF0cml4KGFzX2FkamFjZW5jeV9tYXRyaXgoc3ViSUdyYXBoVy41NzI0MV8yKSksCiAgICAgICAgICAgICAgICAgICAgICAgICAgYXMubWF0cml4KGFzX2FkamFjZW5jeV9tYXRyaXgoc3ViSUdyYXBoVy41NzI0MV8zKSksCiAgICAgICAgICAgICAgICAgICAgICAgICAgYXMubWF0cml4KGFzX2FkamFjZW5jeV9tYXRyaXgoc3ViSUdyYXBoVy41NzI0MV80KSkKICAgICAgICAgICAgICAgICAgICAgICAgICApLAogICAgICAgICAgIGRpbSA9IGMoIDExLCAxMSwgNCApICkKICAgIGlkZW50aXR5IDwtIHNpZW5hRGVwZW5kZW50KGlkZW50aXR5RGF0YSkKICAgIHN0cmVuZ3RoQ292IDwtIHZhckNvdmFyKCBzdHJlbmd0aCApCiAgICBzdHJlbmd0aERWIDwtIHNpZW5hRGVwZW5kZW50KCBzdHJlbmd0aCwgdHlwZSA9ICJiZWhhdmlvciIgKQogICAgbXlkYXRhIDwtIHNpZW5hRGF0YUNyZWF0ZSggaWRlbnRpdHksIHN0cmVuZ3RoQ292ICkKICAgIG15ZWZmIDwtIGdldEVmZmVjdHMoIG15ZGF0YSApCiAgICBOQmRhdGEgPC0gc2llbmFEYXRhQ3JlYXRlKCBpZGVudGl0eSwgc3RyZW5ndGhEViApCiAgICBOQmRhdGEKICAgIE5CZWZmIDwtIGdldEVmZmVjdHMoIE5CZGF0YSApCmVmZmVjdHNEb2N1bWVudGF0aW9uKE5CZWZmKQpOQmVmZiA8LSBpbmNsdWRlRWZmZWN0cyggTkJlZmYsIHRyYW5zVHJpcCwgdHJhbnNSZWNUcmlwICkKTkJlZmYgPC0gaW5jbHVkZUVmZmVjdHMoIE5CZWZmLCBlZ29YLCBlZ29TcVgsIGFsdFgsIGFsdFNxWCwgZGlmZlNxWCwKICAgICAgICAgICAgICAgICAgICAgICAgIGludGVyYWN0aW9uMSA9ICJzdHJlbmd0aCIgKQpOQmVmZiA8LSBpbmNsdWRlRWZmZWN0cyggTkJlZmYsIGF2QWx0LCBuYW1lPSJpZGVudGlmaWNhdGlvbiIsCiAgICAgICAgICAgICAgICAgICAgICAgICBpbnRlcmFjdGlvbjEgPSAiaWRlbnRpdHkiICkKTkJlZmYKbXlhbGdvcml0aG0xIDwtIHNpZW5hQWxnb3JpdGhtQ3JlYXRlKCBwcm9qbmFtZSA9ICdzNTBfTkInICkKTkJhbnMgPC0gc2llbmEwNyggbXlhbGdvcml0aG0xLCBkYXRhID0gTkJkYXRhLCBlZmZlY3RzID0gTkJlZmYpCk5CYW5zCmBgYAoKYGBge3J9CiMgSHlwOiBkcmlua2luZyBpcyAnY29udGFnaW91cycgKGkuZS4sIHBlZXIgaW5mbHVlbmNlKQpzdHJlbmd0aENvbnRhZ2lvdXMgPC0gaW5jbHVkZUVmZmVjdHMoTkJlZmYsYXZTaW0sCglpbnRlcmFjdGlvbjE9ImlkZW50aXR5IixuYW1lPSJzdHJlbmd0aERWIikKIyBlc3RpbWF0ZSB0aGUgbW9kZWwsIHlvdSBjYW4gaW5jcmVhc2UgZXN0aW1hdGlvbiB0aW1lIGJ5IAojICAgdXNpbmcgbW9yZSBwcm9jZXNzb3JzIHdpdGggdGhlIG5ick5vZGVzIG9wdGlvbgojIGNyZWF0ZSBhbiBvYmplY3Qgd2l0aCBvcHRpb25zIGZvciBhbGdvcml0aG0gdHVuaW5nOgptb2RlbE9wdGlvbnMgPC0gc2llbmFBbGdvcml0aG1DcmVhdGUoCglwcm9qbmFtZT0nbGFiMDYwNTIwJywgTWF4RGVncmVlPWMoaWRlbnRpdHk9MTEpLAoJZG91YmxlQXZlcmFnaW5nPTAsIGRpYWdvbmFsaXplPS4yLCBzZWVkPTc4Njg0MCkgICMgdGhlIHNlZWQgaXMgb3B0aW9uYWwKCiMgZXN0aW1hdGUgdGhlIG1vZGVsLCB5b3UgY2FuIGluY3JlYXNlIGVzdGltYXRpb24gdGltZSBieSAKIyAgIHVzaW5nIG1vcmUgcHJvY2Vzc29ycyB3aXRoIHRoZSBuYnJOb2RlcyBvcHRpb24KbXlSZXN1bHRzIDwtIHNpZW5hMDcobW9kZWxPcHRpb25zLCBkYXRhPW15ZGF0YSwKCWVmZmVjdHM9IHN0cmVuZ3RoQ29udGFnaW91cywgYmF0Y2g9RkFMU0UsIHZlcmJvc2U9VFJVRSwKCXVzZUNsdXN0ZXI9VFJVRSwgbmJyTm9kZXM9MykKbXlSZXN1bHRzICAjIGV4YW1pbmUgcmVzdWx0cwpgYGAKCmBgYHtyfQpOQmVmZiA8LSBpbmNsdWRlRWZmZWN0cyggTkJlZmYsIGF2U2ltLCBuYW1lPSJzdHJlbmd0aERWIiwKICAgICAgICAgICAgICAgICAgICAgICAgIGludGVyYWN0aW9uMSA9ICJpZGVudGl0eSIgKQpOQmFucyA8LSBzaWVuYTA3KCBteWFsZ29yaXRobTEsIGRhdGEgPSBOQmRhdGEsIGVmZmVjdHMgPSBOQmVmZikKTkJhbnMKYGBgCgpgYGB7cn0KTkJlZmYgPC0gaW5jbHVkZUVmZmVjdHMoIE5CZWZmLCBhdkFsdCwgbmFtZT0ic3RyZW5ndGhEViIsCiAgICAgICAgICAgICAgICAgICAgICAgICBpbnRlcmFjdGlvbjEgPSAiaWRlbnRpdHkiICkKTkJhbnMgPC0gc2llbmEwNyggbXlhbGdvcml0aG0xLCBkYXRhID0gTkJkYXRhLCBlZmZlY3RzID0gTkJlZmYpCk5CYW5zCmBgYAoKYGBge3J9Cm15TW9kZWxEcmlua1Ntb2tlIDwtIGluY2x1ZGVFZmZlY3RzKE5CZWZmLHNpbVgsCglpbnRlcmFjdGlvbjE9InN0cmVuZ3RoRFYiLG5hbWU9ImlkZW50aXR5IikKTkJhbnMgPC0gc2llbmEwNyggbXlhbGdvcml0aG0xLCBkYXRhID0gTkJkYXRhLCBlZmZlY3RzID0gTkJlZmYpCk5CYW5zCmBgYAoKCgoKCg==</div>
 
 
 
