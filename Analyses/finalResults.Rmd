@@ -7,7 +7,7 @@ output: html_notebook
 
 ```{r, echo=FALSE, include=FALSE}
 library(groundhog)
-pkgs <-  c("tidyverse","here", "lmerTest", "sjPlot","broom.mixed", "kableExtra", "ggeffects", "gt", "brms", "bayestestR","ggdist")
+pkgs <-  c("tidyverse","here", "lmerTest", "sjPlot","broom.mixed", "kableExtra", "ggeffects", "gt", "brms", "bayestestR","ggdist","tm","wordcloud")
 groundhog.day <- '2022-07-25'
 groundhog.library(pkgs, groundhog.day)
 here::i_am("Analyses/idNetPrelimAnalyses.Rmd")
@@ -32,6 +32,8 @@ scaled <- apply(fullShort[2:ncol(fullShort)], 2, function(x) scale(x))
 colnames(scaled) <- paste0(colnames(scaled),".Z")
 fullShort <- cbind(fullShort, scaled)
 
+fullShort <- fullLong %>% distinct(subID, Time, Stability, totPropAdded, totPropDropped) %>% right_join(fullShort, by=c("subID","Time"))
+
 fullData <- fullData %>% mutate_at(c("Salient", "I", "M", "I", "P", "St", "Ent", "Sim", "Proto", "A", "D", "MemUnc", "IdUnc", "Should", "Consist", "Salient", "Ideal", "BExp", "GExp", "BelPer"), ordered)
 ```
 
@@ -55,6 +57,76 @@ named.contr.sum<-function(x, ...) {
 }
 fullData$Categ <- as.factor(fullData$Categ)
 contrasts(fullData$Categ) <- named.contr.sum(levels(fullData$Categ))
+devtools::source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/corToOne.R")
+devtools::source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/plotCommAxes.R")
+devtools::source_url("https://raw.githubusercontent.com/JacobElder/MiscellaneousR/master/named.effects.ref.R")
+```
+
+# Wordcloud
+
+```{r}
+#Create a vector containing only the text
+text <- as.vector(fullData$identity)
+# Create a corpus  
+docs <- Corpus(VectorSource(text))
+docs <- docs %>%
+  tm_map(removeNumbers) %>%
+  tm_map(removePunctuation) %>%
+  tm_map(stripWhitespace)
+docs <- tm_map(docs, content_transformer(tolower))
+docs <- tm_map(docs, removeWords, stopwords("english"))
+docs <- tm_map(docs, removeWords, c("the","and"))
+
+dtm <- TermDocumentMatrix(docs) 
+matrix <- as.matrix(dtm) 
+words <- sort(rowSums(matrix),decreasing=TRUE) 
+df <- data.frame(word = names(words),freq=words)
+
+set.seed(24)
+wordcloud(words = df$word, freq = df$freq, min.freq = 1,           max.words=200, random.order=FALSE, rot.per=0.35,            colors=brewer.pal(8, "Dark2"))
+```
+
+# Descriptives
+
+## Stability
+
+```{r}
+psych::describe.by(fullShort$Stability, fullShort$Time, na.rm=T)
+psych::describe(fullShort$Stability,na.rm=T)
+```
+
+## Proportion Added
+
+```{r}
+psych::describe.by(fullShort$totPropAdded, fullShort$Time, na.rm=T)
+psych::describe(fullShort$totPropAdded,na.rm=T)
+```
+
+## Proportion Dropped
+
+```{r}
+psych::describe.by(fullShort$totPropDropped, fullShort$Time, na.rm=T)
+psych::describe(fullShort$totPropDropped,na.rm=T)
+```
+
+# Number of Identities
+
+```{r}
+psych::describe(fullShort$numID)
+```
+
+# Degree
+
+```{r}
+psych::describe.by(fullData$degree, fullShort$Time, na.rm=T)
+psych::describe(fullData$degree,na.rm=T)
+```
+
+# Strength
+
+```{r}
+psych::describe.by(fullData$strength, fullData$Time, na.rm=T)
+psych::describe(fullData$strength,na.rm=T)
 ```
 
 # Between Category Differences
@@ -62,14 +134,17 @@ contrasts(fullData$Categ) <- named.contr.sum(levels(fullData$Categ))
 ## Degree Centrality Between Categories
 
 ```{r}
-m<-glmer(degree ~  Categ + numID + Time.Z + ( Time.Z | identity / subID), data=fullData, family = poisson)
+m<-glmer(degree ~  Categ + numID + Time.Z + ( 1 | subID) + ( 1 | identity:subID), data=fullData, family = poisson)
 summary(m)
+psych::describe.by(fullData$degree, fullData$Categ)
 ggpredict(m, terms = c("Categ")) %>% plot()
+comparisons(m, type = "link") %>% tidy()
 ```
 
 ```{r}
-m<-lmer(strength.Z ~  Categ + numID + Time.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(strength.Z ~  Categ + numID + Time.Z + ( 1 | subID) + ( 1 | identity:subID), data=fullData)
 summary(m)
+psych::describe.by(fullData$strength, fullData$Categ)
 ggpredict(m, terms = c("Categ")) %>% plot()
 ```
 
@@ -85,9 +160,279 @@ fullData %>% drop_na %>% ggplot(aes(Categ, degree)) +
 ```{r}
 #m<-brm(I ~ Categ + numID + Time.Z + ( Time.Z | identity / subID), data=fullData, silent=2, refresh=0, cores=ncores, refresh=0, family = cumulative("probit"))
 
-m<-lmer(I.Z ~  Categ + numID + Time.Z + ( Time.Z | identity / subID), data=fullData)
+m<-lmer(I.Z ~  Categ + numID + Time.Z + ( 1 | subID) + ( 1 | identity:subID), data=fullData)
 summary(m)
+psych::describe.by(as.numeric(fullData$I), fullData$Categ)
 ggpredict(m, terms = c("Categ")) %>% plot()
+```
+
+# Selection Effects
+
+## Possible Selection Models
+
+```{r}
+# Residualized Change
+
+m<-glmer(degree ~   numID + deg_Prev + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData, family=poisson)
+summary(m)
+
+m<-lmer(strength ~   numID + streng_Prev + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+# Change Score/Residualized Change
+
+m<-lmer(deg_Change ~   numID + deg_Prev + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+# Change Score
+
+m<-lmer(deg_Change ~   numID + GExp.Z * BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+# N-Back Prediction
+
+m<-glmer(degree ~   numID + scale(GExp_Prev) + Time.Z + ( Time.Z + scale(GExp_Prev) | subID) + (1 | subID:identity), data=fullData, family=poisson)
+summary(m)
+
+# Cumulative
+
+m<-glmer(degree ~   numID + GExp_Cum + Time.Z + ( Time.Z + GExp_Cum | subID) + (1 | subID:identity), data=fullData, family=poisson)
+summary(m)
+```
+
+## Valenced Experiences
+
+```{r}
+m<-lmer( streng_Change ~   numID + MemUnc_Change.Z + ( Time.Z + MemUnc_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( streng_Change ~   numID + P_Change.Z + ( Time.Z + P_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+```{r}
+m<-lmer( P_Change.Z ~ numID + GExp.Z + Time.Z + Time.Z + ( Time.Z + GExp_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropDropped ~   numID + P_Change.Z + Time.Z + Time.Z + ( Time.Z + P.Z+GExp_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropAdded ~   numID + P.Z *GExp_Change.Z + Time.Z + ( Time.Z + streng_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+
+
+```{r}
+# Identity Uncertainty
+
+m<-lmer( nodPropAdded ~   numID + IdUnc_Change.Z + Time.Z + ( Time.Z + IdUnc_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropDropped ~   numID + IdUnc_Change.Z * Time.Z + ( Time.Z + IdUnc_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropAdded ~   numID + Ent_Change.Z + Time.Z + ( Time.Z + Ent_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropDropped ~   numID + Ent_Change.Z * Time.Z + ( Time.Z + Ent_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropAdded ~   numID + P_Change.Z + Time.Z + ( Time.Z + P_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropDropped ~   numID + P_Change.Z * Time.Z + ( Time.Z + P_Change.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropAdded ~   numID + GExp.Z * GExp_Prev.Z + Time.Z + ( Time.Z + GExp.Z + GExp_Prev.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropDropped ~   numID + GExp.Z * GExp_Prev.Z + Time.Z + ( Time.Z + GExp.Z + GExp_Prev.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropAdded ~   numID + BExp.Z * BExp_Prev.Z + Time.Z + ( Time.Z + BExp.Z + BExp_Prev.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer( nodPropDropped ~   numID + BExp.Z * BExp_Prev.Z + Time.Z + ( Time.Z + BExp.Z + BExp_Prev.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+
+Positive social identity experiences lead to increases in connections and similarities to other identities.
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + GExp.Z + BExp.Z + Time.Z + ( Time.Z + GExp.Z + BExp.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+# 60686 canonical example
+```
+
+## Salient Experiences
+
+Salient identity experiences predict increases in connections and similarities to other identities
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + Salient.Z + Time.Z + ( Time.Z + Salient.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+test<-coef(m)
+test$subID[order(test$subID$Salient.Z),]
+# 606789 is canonical example
+
+m<-lmer(streng_Change ~   numID + streng_Prev + Salient.Z + Time.Z + ( Time.Z + Salient.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Obligation
+
+The more people feel they should behave like their group, the more connections and similarity to other identities increases.
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + Should.Z + Time.Z + ( Time.Z + Should.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + Should.Z + Time.Z + ( Time.Z + Should.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Consistent Experiences
+
+The more people feel they behaved conistent with their group, the more connections and similarity to other identities increases.
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + Consist.Z + Time.Z + ( Time.Z + Consist.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + Consist.Z + Time.Z + ( Time.Z + Consist.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Importance
+
+The more important is for people to belong to this group, the more connections and similarities to the group increase.
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + Ideal.Z + Time.Z + ( Time.Z + Ideal.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + Ideal.Z + Time.Z + ( Time.Z + Ideal.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Entitativity
+
+The more entitative/cohesive the group is perceived as being, the more connections/similarities to other groups.
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + Ent.Z + Time.Z + ( Time.Z + Ent.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + Ent.Z + Time.Z + ( Time.Z + Ent.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Identity Uncertainty
+
+No evidence that identity uncertainty leads to structural changes
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + IdUnc.Z + Time.Z + ( Time.Z + IdUnc.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + IdUnc.Z + Time.Z + ( Time.Z + IdUnc.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Membership Uncertainty
+
+No evidence that membership uncertainty leads to structural changes
+
+```{r}
+m<-lmer(deg_Change ~   numID + deg_Prev + MemUnc.Z + Time.Z + ( Time.Z + MemUnc.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(streng_Change ~   numID + streng_Prev + MemUnc.Z + Time.Z + ( Time.Z + MemUnc.Z | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+# Influence Effects
+
+## Identification
+
+```{r}
+m<-lmer(I_Change ~  numID + deg_Change + Time.Z + I_Prev + ( Time.Z + deg_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(I_Change ~  numID + streng_Change + Time.Z + I_Prev + ( Time.Z + streng_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+# Entitativity
+
+Weak evidence that increases in degree and similarity lead to small changes in entitativity
+
+```{r}
+m<-lmer(Ent_Change ~  numID + deg_Change + Time.Z + Ent_Prev + ( Time.Z + deg_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(Ent_Change ~  numID + streng_Change + Time.Z + Ent_Prev + ( Time.Z + streng_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Positivity
+
+Small evidence that increases in strength lead to increases in positivity
+
+```{r}
+m<-lmer(P_Change ~  numID + deg_Change + Time.Z + P_Prev + ( Time.Z + deg_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(P_Change ~  numID + streng_Change + Time.Z + P_Prev + ( Time.Z + streng_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Homogeneity/Similarity
+
+No evidence that changes in degree/strength predict changes in perceived group homogeneity
+
+```{r}
+m<-lmer(Sim_Change ~  numID + deg_Change + Time.Z + Sim_Prev + ( Time.Z + deg_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(Sim_Change ~  numID + streng_Change + Time.Z + Sim_Prev + ( Time.Z + streng_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Assimilation
+
+No evidence that changes in degree/strength predict changes in perceived assimilation
+
+```{r}
+m<-lmer(A_Change ~  numID + deg_Change + Time.Z + A_Prev + ( Time.Z + deg_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(A_Change ~  numID + streng_Change + Time.Z + A_Prev + ( Time.Z + streng_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+```
+
+## Distinctness
+
+Increases in degree and strength don't predict changes in group distinctness
+
+```{r}
+m<-lmer(D_Change ~  numID + deg_Change + Time.Z + A_Prev + ( Time.Z + deg_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
+
+m<-lmer(D_Change ~  numID + streng_Change + Time.Z + A_Prev + ( Time.Z + streng_Change | subID) + (1 | subID:identity), data=fullData)
+summary(m)
 ```
 
 # Degree Centrality Effects
@@ -169,6 +514,7 @@ summary(m)
 ```{r}
 m<-lmer(M.Z ~  numID + Time.Z * degree + ( Time.Z | identity / subID), data=fullData)
 summary(m)
+ggpredict(m, terms = c("Time.Z","degree")) %>% plot()
 
 m<-lmer(M.Z ~  numID + Time.Z * strength.Z + ( Time.Z | identity / subID), data=fullData)
 summary(m)
@@ -348,7 +694,7 @@ m<-lmer(I_neigh.Z ~ I.Z * Time.Z + ( I.Z + Time.Z | subID ) + (1 | subID:identit
 summary(m)
 ggpredict(m, terms = c("Time.Z","I.Z")) %>% plot()
 
-m<-lmer(I.Z ~ I_neigh.Z * Time.Z + ( I_neigh.Z + Time.Z | subID ) + (1 | subID:identity), data=fullData)
+m<-lmer(I.Z ~ I_neigh.Z + Time.Z + ( I_neigh.Z + Time.Z | subID ) + (1 | subID:identity), data=fullData)
 summary(m)
 ggpredict(m, terms = c("Time.Z","I_neigh.Z")) %>% plot()
 ```
@@ -424,18 +770,21 @@ summary(m)
 
 ## Multiple Group Membership and Well-Being (i.e., Self-Esteem)
 
+
+
+
 ```{r}
-m <- glmer(numID~SE.Z * Time.Z 
+m <- glmer(numID~SE.Z + Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort, family="poisson")
 summary(m)
 
-m <- glmer(numID~NFC.Z * Time.Z 
+m <- glmer(numID~NFC.Z + Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort, family="poisson")
 summary(m)
 
-m <- glmer(numID~SCC.Z * Time.Z 
+m <- glmer(numID~SCC.Z + Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort, family="poisson")
 summary(m)
@@ -444,23 +793,96 @@ summary(m)
 ## Network Density
 
 ```{r}
-m <- lmer(dense.Z~SE.Z * Time.Z 
+m <- lmer(dense.Z~SE.Z + Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
 summary(m)
 
-m <- lmer(dense.Z~NFC.Z * Time.Z 
+m <- lmer(dense.Z~NFC.Z + Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
 summary(m)
 
-m <- lmer(numID~SCC.Z * Time.Z 
+m <- lmer(numID~SCC.Z + Time.Z 
                  + ( Time.Z |subID),
                  data=fullShort)
 summary(m)
 ```
 
+# Positive Homophily
+
 ```{r}
+m <- lmer(P_homoph.Z~SE.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(P_homoph.Z~NFC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(P_homoph.Z~SCC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+```
+
+# Identification Homophily
+
+```{r}
+m <- lmer(I_homoph.Z~SE.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(I_homoph.Z~NFC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(I_homoph.Z~SCC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+```
+
+# Membership Uncertainty Homophily
+
+```{r}
+m <- lmer(MemUnc_homoph.Z~SE.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(MemUnc_homoph.Z~NFC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(MemUnc_homoph.Z~SCC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+```
+
+# Entitativity Homophily
+
+```{r}
+m <- lmer(Ent_homoph.Z~SE.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(Ent_homoph.Z~NFC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
+
+m <- lmer(Ent_homoph.Z~SCC.Z + Time.Z 
+                 + ( Time.Z |subID),
+                 data=fullShort)
+summary(m)
 ```
 
 

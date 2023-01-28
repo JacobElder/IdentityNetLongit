@@ -666,6 +666,21 @@ test <- subset(fullLong, subID==59360)
 ```
 
 
+```{r}
+jaccard_index<-function(g1,g2) {
+  library(igraph)
+  g1<-get.adjacency(g1)
+  g1[g1 > 0.001] <- 1
+  g2<-get.adjacency(g2)
+  g2[g2 > 0.001] <- 1
+  A<-sum(g1 != g2) # edges that changed (0->1 and 1->0)
+  B<-sum(g1 * g2) # edges that have a 1 in M1 and 1 in M2, so stayed the same (1->1)
+  return(round(B/sum(A,B),digits = 2)) # the ratio of stable ties ties (B), compared to all ties who change (A) + stable ties (B)
+  on.exit(rm(A,B))
+}
+```
+
+
 # Change
 
 ```{r}
@@ -781,6 +796,81 @@ for(n in 2:4){
       
       fullLong$D_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$D[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
       
+      # GExp Change
+      
+      fullLong$GExp_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # GExp Previous
+      
+      fullLong$GExp_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # BExp Change
+      
+      fullLong$BExp_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # BExp Previous
+      
+      fullLong$BExp_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Salient Change
+      
+      fullLong$Salient_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Salient Previous
+      
+      fullLong$Salient_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Should Change
+      
+      fullLong$Should_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Should Previous
+      
+      fullLong$Should_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Consist Change
+      
+      fullLong$Consist_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Consist Previous
+      
+      fullLong$Consist_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Ideal Change
+      
+      fullLong$Ideal_Change[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Ideal[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] - fullLong$Ideal[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      # Ideal Previous
+      
+      fullLong$Ideal_Prev[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- fullLong$Ideal[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==(n-1)]
+      
+      g1 <- get(paste0("subIGraph.",subID,"_",(n-1)))
+      g2 <- get(paste0("subIGraph.",subID,"_",(n)))
+      
+      if(k==1){
+      fullLong$Stability[fullLong$subID==subID & fullLong$Time==n] <- jaccard_index( g1, g2)
+      
+      retained <- length(intersect(E(g1),E(g2)))
+      added <- tryCatch( length(E(difference(g2,g1))), 
+                         error = function(x) {
+                           return(0)
+                         })
+      dropped <- tryCatch( length(E(difference(g1,g2))), 
+                         error = function(x) {
+                           return(0)
+                         })
+      
+      fullLong$totPropDropped[fullLong$subID==subID & fullLong$Time==n] <- dropped/(retained+added+dropped)
+      fullLong$totPropAdded[fullLong$subID==subID & fullLong$Time==n] <- added/(retained+added+dropped)
+      }
+      
+      nodeAdded <- length( setdiff(as_ids(incident(g2, identity)), as_ids(incident(g1, identity))) )
+      nodeDropped <- length( setdiff(as_ids(incident(g1, identity)), as_ids(incident(g2, identity))) )
+      nodeRetained <- length( intersect(as_ids(incident(g1, identity)), as_ids(incident(g2, identity))) )
+      
+      fullLong$nodPropDropped[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- nodeDropped/(nodeRetained+nodeAdded+nodeDropped)
+      fullLong$nodPropAdded[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- nodeAdded/(nodeRetained+nodeAdded+nodeDropped)
+      
     }
   }
 }
@@ -823,6 +913,46 @@ for(n in 1:4){
       
       fullLong$MemUnc_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
       fullLong$MemUnc_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$MemUnc[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # degree
+      
+      fullLong$degree_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$degree[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$degree_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$degree[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # strength
+      
+      fullLong$strength_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$strength[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$strength_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$strength[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # GExp
+      
+      fullLong$GExp_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$GExp_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$GExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # BExp
+      
+      fullLong$BExp_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$BExp_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$BExp[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # Salient
+      
+      fullLong$Salient_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Salient_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Salient[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # Should
+      
+      fullLong$Should_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Should_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Should[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # Consist
+      
+      fullLong$Consist_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Consist_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Consist[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      
+      # Ideal
+      
+      fullLong$Ideal_Cum[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- sum(fullLong$Ideal[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
+      fullLong$Ideal_Ave[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time==n] <- mean(fullLong$Ideal[fullLong$subID==subID & fullLong$identity==identity & fullLong$Time %in% 1:n],na.rm=T)
       
     }
   }
